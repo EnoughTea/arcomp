@@ -21,12 +21,11 @@ namespace Arcomp {
             var options = new CommandLineOptions();
             if (!Parser.Default.ParseArgumentsStrict(args, options)) { Environment.Exit(1); }
 
-            string archiveName = Path.Combine(Directory.GetCurrentDirectory(), "Test.7z");
-            var result = ExecuteSevenZipProcess("l " + archiveName);
+            string archiveName = Path.Combine(Directory.GetCurrentDirectory(), "*");
+            var result = ExecuteSevenZipProcess("l " + archiveName); // "-slt"
             Console.WriteLine(result);
-            var archives = SevenZipArchiveMetadata.ParseMany(result).ToArray();
+            var archives = SevenZip.CreateFromOutput(result).ToArray();
             var first = archives.FirstOrDefault();
-            var real = first.ToArchive();
             Console.ReadKey();
         }
 

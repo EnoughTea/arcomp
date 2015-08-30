@@ -18,7 +18,7 @@ namespace ArchiveCompare {
 
             Name = name;
             ParentFolder = parent;
-            Size = 0;
+            Size = size;
             PackedSize = packedSize;
             LastModifed = lastModified;
         }
@@ -30,11 +30,13 @@ namespace ArchiveCompare {
         ///  Null means modified date in unavailable.</summary>
         public DateTime? LastModifed { get; }
 
-        /// <summary> Gets or sets the uncompressed size. 0 means uncompressed size is unavailable. </summary>
+        /// <summary> Gets or sets the uncompressed size. 0 means that entry is a folder or
+        ///  uncompressed size is unavailable. </summary>
         public long Size { get; }
 
         /// <summary> Gets or sets the compressed size.
-        /// 0 means that either compressed size is unavailable or no compression was done on the entry.
+        /// 0 means that either entry is a folder, or no compression was done on the entry,
+        /// or compressed size is unavailable.
         /// </summary>
         public long PackedSize { get; }
 

@@ -17,7 +17,7 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets entries which belong to this directory, top-level only. </summary>
-        public HashSet<Entry> Contents { get; private set; }
+        public HashSet<Entry> Contents { get; }
 
         /// <summary> Gathers all entries which belong to this directory, top-level and recursively down. </summary>
         public IEnumerable<Entry> FlattenContents() {

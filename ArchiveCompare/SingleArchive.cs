@@ -11,8 +11,7 @@ namespace ArchiveCompare {
         /// <param name="name">Archive name.</param>
         /// <param name="type">Archive type.</param>
         /// <param name="entries">Uninitialized archive entries.</param>
-        /// <param name="lastModified">The last modified date either for this archive or for its most
-        ///  lately modified file.</param>
+        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
         /// <param name="physicalSize">Size of the archive as reported by file system.</param>
         /// <param name="size">Uncompressed contents size, 0 if unavailable. </param>
         /// <param name="packedSize">Cmpressed contents size, 0 if unavailable.</param>
@@ -60,7 +59,7 @@ namespace ArchiveCompare {
             if (Contents != null) { throw new InvalidOperationException("Can't initialize archive twice."); }
 
             var entriesFixed = entries as IList<Entry> ?? entries.ToArray();
-            var resultingEntries = new List<Entry>();
+            var rootEntries = new List<Entry>();
             // Find all folders in the archive entries:
             var directories = (from entry in entriesFixed
                 where entry is FolderEntry
@@ -69,22 +68,30 @@ namespace ArchiveCompare {
             // Pass every archive entry and link it to its parent entry.
             long calculatedContentSize = 0;
             long calculatedPackedSize = 0;
+            DateTime maxLastModified = DateTime.MinValue;
             foreach (var entry in entriesFixed) {
                 if (entry is FileEntry) { FileCount++; }
 
+                // Archive's unpacked and packed sizes are the sum of corresponding entry sizes.
                 calculatedContentSize += entry.Size;
                 calculatedPackedSize += entry.PackedSize;
-                var parentName = Path.GetDirectoryName(entry.Name);
-                if (String.IsNullOrEmpty(parentName)) {
-                    resultingEntries.Add(entry);
-                } else {
-                    var parent = directories[parentName];
+                // Archive's last modified is the latest modified file.
+                if (entry.LastModifed != null && entry.LastModifed.Value > maxLastModified) {
+                    maxLastModified = entry.LastModifed.Value;
+                }
+
+                // Look for parent entry to link with:
+                var parent = directories.GetValue(Path.GetDirectoryName(entry.Name));
+                if (parent != null) {
                     parent.Contents.Add(entry);
                     entry.ParentFolder = parent;
+                } else {    // No parent entry means a root entry.
+                    rootEntries.Add(entry);
                 }
             }
 
-            Contents = resultingEntries;
+            Contents = rootEntries;
+            if (LastModified == null && maxLastModified != DateTime.MinValue) { LastModified = maxLastModified; }
             if (Size == 0) { Size = calculatedContentSize; }
             if (PackedSize == 0) { PackedSize = calculatedPackedSize; }
         }

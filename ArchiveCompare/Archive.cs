@@ -16,6 +16,8 @@ namespace ArchiveCompare {
         GZip,
         /// <summary> mbr. </summary>
         Mbr,
+        /// <summary> PE. </summary>
+        Pe,
         /// <summary> Rar. </summary>
         Rar,
         /// <summary> 7z. </summary>
@@ -35,8 +37,7 @@ namespace ArchiveCompare {
         /// <summary> Initializes a new instance of the <see cref="Archive" /> class. </summary>
         /// <param name="name">Archive name.</param>
         /// <param name="type">Archive type.</param>
-        /// <param name="lastModified">The last modified date either for this archive or for its most
-        ///  lately modified file.</param>
+        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
         /// <param name="physicalSize">Size of the archive as reported by file system.</param>
         protected Archive(string name, ArchiveType type, DateTime? lastModified = null, long physicalSize = 0) {
             Contract.Requires(!String.IsNullOrEmpty(name));
@@ -48,18 +49,28 @@ namespace ArchiveCompare {
             PhysicalSize = physicalSize;
         }
 
+        private DateTime? _lastModified;
+
         /// <summary> Gets or sets the archive file path.</summary>
         public string Name { get; }
 
         /// <summary> Gets or sets the archive type. </summary>
         public ArchiveType Type { get; }
 
-        /// <summary> Gets or sets size of the archive as reported by file system. </summary>
+        /// <summary> Gets or sets size of the archive as reported by file system. For split archives means
+        ///  user-defined part size (last part could be of any size). </summary>
         public long PhysicalSize { get; }
 
-        /// <summary> Gets or sets the date when archive was last modified.
-        ///  Null means modified date in unavailable.</summary>
-        public DateTime? LastModified { get;  }
+        /// <summary> Gets or sets the last modified date of the latest modified file in the archive.
+        ///  Null means latest modified file date in unavailable.</summary>
+        public DateTime? LastModified {
+            get {
+                var split = this as SplitArchive;
+                return (split != null && _lastModified == null) ? split.Nested.LastModified : _lastModified;
+            }
+
+            internal set { _lastModified = value; }
+        }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
@@ -89,6 +100,7 @@ namespace ArchiveCompare {
             { ArchiveType.BZip2, "bzip2" },
             { ArchiveType.GZip, "gzip" },
             { ArchiveType.Mbr, "mbr" },
+            { ArchiveType.Pe, "PE" },
             { ArchiveType.Rar, "Rar" },
             { ArchiveType.Tar, "tar" },
             { ArchiveType.Vhd, "vhd" },
@@ -101,5 +113,6 @@ namespace ArchiveCompare {
 
         private static readonly Dictionary<string, ArchiveType> NamesToTypes = TypesToNames
             .ToDictionary(key => key.Value, value => value.Key);
+
     }
 }
