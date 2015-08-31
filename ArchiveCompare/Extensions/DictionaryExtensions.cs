@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Extension methods for <see cref="Dictionary{TKey,TValue}"/>. </summary>
@@ -13,8 +14,8 @@ namespace ArchiveCompare {
         /// <param name="defaultValue">The default value to be returned if the specified key is not present.</param>
         /// <returns>Value matching specified <paramref name="key" /> or
         /// <paramref name="defaultValue" /> if none is found.</returns>
-        [Pure]
-        public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, TValue> self, TKey key,
+        [System.Diagnostics.Contracts.Pure, CanBeNull]
+        public static TValue GetValue<TKey, TValue>([NotNull] this IDictionary<TKey, TValue> self, [NotNull] TKey key,
             TValue defaultValue = default(TValue)) {
             Contract.Requires(self != null);
             Contract.Requires(!ReferenceEquals(key, null));

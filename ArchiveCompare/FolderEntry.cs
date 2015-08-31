@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archived directory. </summary>
@@ -13,14 +15,21 @@ namespace ArchiveCompare {
         ///  no compression was done on the entry.</param>
         public FolderEntry(string name, FolderEntry parent = null, DateTime? lastModified = null, long size = 0,
             long packedSize = 0) : base(name, parent, lastModified, size, packedSize) {
+            Contract.Requires(size >= 0);
+            Contract.Requires(packedSize >= 0);
+
             Contents = new HashSet<Entry>();
         }
 
         /// <summary> Gets entries which belong to this directory, top-level only. </summary>
+        [NotNull]
         public HashSet<Entry> Contents { get; }
 
         /// <summary> Gathers all entries which belong to this directory, top-level and recursively down. </summary>
+        [NotNull]
         public IEnumerable<Entry> FlattenContents() {
+            Contract.Ensures(Contract.Result<IEnumerable<Entry>>() != null);
+
             foreach (var child in Contents) {
                 yield return child;
                 var childFolder = (child as FolderEntry);

@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Archive consisting of single archive file. </summary>
@@ -18,10 +20,19 @@ namespace ArchiveCompare {
         public SingleArchive(string name, ArchiveType type, IEnumerable<Entry> entries, DateTime? lastModified = null,
             long physicalSize = 0, long size = 0, long packedSize = 0)
             : base (name, type, lastModified, physicalSize) {
+            Contract.Requires(entries != null);
+            Contract.Requires(size >= 0);
+            Contract.Requires(physicalSize >= 0);
+            Contract.Requires(packedSize >= 0);
+            Contract.Ensures(Contents != null);
+
             Size = size;
             PackedSize = packedSize;
+            _contents = new List<Entry>();
             Initialize(entries);
         }
+
+        private readonly List<Entry> _contents;
 
         /// <summary> Gets or sets the uncompressed contents size, 0 if unavailable. </summary>
         public long Size { get; private set; }
@@ -36,11 +47,15 @@ namespace ArchiveCompare {
         public long FileCount { get; private set; }
 
         /// <summary> Gets the archive root entries. </summary>
-        public IEnumerable<Entry> Contents { get; private set; }
+        [NotNull]
+        public IEnumerable<Entry> Contents => _contents;
 
         /// <summary> Converts hierarchical contents into flat sequence. </summary>
         /// <returns> Flattened contents. </returns>
+        [NotNull]
         public IEnumerable<Entry> FlattenContents() {
+            Contract.Ensures(Contract.Result<IEnumerable<Entry>>() != null);
+
             foreach (var child in Contents) {
                 yield return child;
                 var childFolder = (child as FolderEntry);
@@ -56,10 +71,10 @@ namespace ArchiveCompare {
         /// <param name="entries">Uninitialized archive entries.</param>
         private void Initialize(IEnumerable<Entry> entries) {
             Contract.Requires(entries != null);
-            if (Contents != null) { throw new InvalidOperationException("Can't initialize archive twice."); }
 
-            var entriesFixed = entries as IList<Entry> ?? entries.ToArray();
-            var rootEntries = new List<Entry>();
+            var entriesFixed = (entries as IList<Entry>) ?? entries.ToArray();
+            Debug.Assert(entriesFixed != null);
+            _contents.Clear();
             // Find all folders in the archive entries:
             var directories = (from entry in entriesFixed
                 where entry is FolderEntry
@@ -86,11 +101,10 @@ namespace ArchiveCompare {
                     parent.Contents.Add(entry);
                     entry.ParentFolder = parent;
                 } else {    // No parent entry means a root entry.
-                    rootEntries.Add(entry);
+                    _contents.Add(entry);
                 }
             }
 
-            Contents = rootEntries;
             if (LastModified == null && maxLastModified != DateTime.MinValue) { LastModified = maxLastModified; }
             if (Size == 0) { Size = calculatedContentSize; }
             if (PackedSize == 0) { PackedSize = calculatedPackedSize; }

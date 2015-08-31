@@ -23,7 +23,7 @@ namespace ArchiveCompare {
         /// <exception cref="InvalidOperationException">Can't create entry from invalid metadata.</exception>
         public Entry ToEntry() {
             // Entry can be completely empty, but it will always have name.
-            if (String.IsNullOrEmpty(Name)) {
+            if (string.IsNullOrEmpty(Name)) {
                 throw new InvalidOperationException("Can't create entry from invalid metadata.");
             }
 
@@ -57,7 +57,7 @@ namespace ArchiveCompare {
         /// </exception>
         [CanBeNull]
         public static SevenZipArchiveEntryMetadata Parse([NotNull] string sevenZipEntryOutput) {
-            Contract.Requires(!String.IsNullOrWhiteSpace(sevenZipEntryOutput));
+            Contract.Requires(!string.IsNullOrWhiteSpace(sevenZipEntryOutput));
 
             return (sevenZipEntryOutput.IndexOf(Environment.NewLine, StringComparison.OrdinalIgnoreCase) < 0)
                 ? ParseFromSimpleLineEntry(sevenZipEntryOutput)
@@ -66,12 +66,12 @@ namespace ArchiveCompare {
 
         [CanBeNull]
         private static SevenZipArchiveEntryMetadata ParseFromSimpleLineEntry([NotNull] string simpleLineEntry) {
-            Contract.Requires(!String.IsNullOrEmpty(simpleLineEntry));
+            Contract.Requires(!string.IsNullOrEmpty(simpleLineEntry));
 
             if (simpleLineEntry.StartsWith("Errors:")) { return null; }
 
             string name = simpleLineEntry.Substring(53).Trim();
-            if (String.IsNullOrWhiteSpace(name)) { return null; }
+            if (string.IsNullOrWhiteSpace(name)) { return null; }
 
             string attributes = simpleLineEntry.Substring(20, 5).Trim();
             string size = simpleLineEntry.Substring(26, 12).Trim();
@@ -88,11 +88,11 @@ namespace ArchiveCompare {
 
         [CanBeNull]
         private static SevenZipArchiveEntryMetadata ParseFromDetailedLineEntry([NotNull] string sevenZipEntryOutput) {
-            Contract.Requires(!String.IsNullOrEmpty(sevenZipEntryOutput));
+            Contract.Requires(!string.IsNullOrEmpty(sevenZipEntryOutput));
 
             var entryData = SevenZipTools.MakeValueMap(sevenZipEntryOutput);
             string name = entryData.GetValue("Path");
-            if (String.IsNullOrWhiteSpace(name)) { return null; }
+            if (string.IsNullOrWhiteSpace(name)) { return null; }
 
             string attributes = entryData.GetValue("Attributes");
             string size = entryData.GetValue("Size");

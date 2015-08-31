@@ -2,6 +2,7 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Extension methods for <see cref="string"/>. </summary>
@@ -10,65 +11,109 @@ namespace ArchiveCompare {
         /// <param name="text">String to repeat.</param>
         /// <param name="count">Number of times given string must be repeated.</param>
         /// <returns>The resulting string.</returns>
-        [Pure]
+        [System.Diagnostics.Contracts.Pure, NotNull]
         public static string Repeat(this string text, int count) {
-            return new StringBuilder().Insert(0, text, count).ToString();
+            Contract.Requires(text != null);
+            Contract.Ensures(Contract.Result<string>() != null);
+
+            return (text == string.Empty)
+                ? string.Empty
+                : new StringBuilder(text.Length * count).Insert(0, text, count).ToString();
         }
 
-        [Pure]
-        public static int IndexOfNextSymbol(this string self) {
-            Contract.Requires(self != null);
+        /// <summary> Finds index of the next non-whitespace symbol in the string. </summary>
+        /// <param name="text"> Searched string. </param>
+        /// <returns> Index of the next non-whitespace symbol in the string. </returns>
+        /// <exception cref="OverflowException"> Index of next symbol is larger than
+        ///  <see cref="F:System.Int32.MaxValue" />. </exception>
+        [System.Diagnostics.Contracts.Pure]
+        public static int IndexOfNextSymbol(this string text) {
+            Contract.Requires(text != null);
+            Contract.Ensures(Contract.Result<int>() >= 0);
 
-            return self.Cast<char>().TakeWhile(char.IsWhiteSpace).Count();
+            return text.Cast<char>().TakeWhile(char.IsWhiteSpace).Count();
         }
 
-        [Pure]
-        public static int IndexOfNextWhitespace(this string self) {
-            Contract.Requires(self != null);
+        /// <exception cref="OverflowException"> Index of next whitespace is larger than
+        ///  <see cref="F:System.Int32.MaxValue" />. </exception>
+        [System.Diagnostics.Contracts.Pure]
+        public static int IndexOfNextWhitespace(this string text) {
+            Contract.Requires(text != null);
+            Contract.Ensures(Contract.Result<int>() >= 0);
 
-            return self.Cast<char>().TakeWhile(c => !char.IsWhiteSpace(c)).Count();
+            return text.Cast<char>().TakeWhile(c => !char.IsWhiteSpace(c)).Count();
         }
 
-        [Pure]
-        public static string TakeSymbolsUntilWhitespace(this string self, int startIndex = 0) {
-            Contract.Requires(self != null);
+        /// <summary> Finds and returns all symbols from the start index until first whitespace symbol. </summary>
+        /// <param name="text">Text to search.</param>
+        /// <param name="startIndex">Search start index.</param>
+        /// <returns>Substring from first symbol since start index until first whitespace.</returns>
+        /// <exception cref="OverflowException"> Next whitespace is at index larger than
+        ///  <see cref="F:System.Int32.MaxValue" />. </exception>
+        [System.Diagnostics.Contracts.Pure, NotNull]
+        public static string TakeSymbolsUntilWhitespace(this string text, int startIndex = 0) {
+            Contract.Requires(text != null);
             Contract.Requires(startIndex >= 0);
+            Contract.Ensures(Contract.Result<string>() != null);
 
             int end;
-            return self.TakeSymbolsUntilWhitespace(startIndex, out end);
+            return text.TakeSymbolsUntilWhitespace(startIndex, out end);
         }
 
-        [Pure]
-        public static string TakeSymbolsUntilWhitespace(this string self, int startIndex, out int endIndex) {
-            Contract.Requires(self != null);
+        /// <summary> Finds and returns all symbols from the start index until first whitespace symbol. </summary>
+        /// <param name="text">Text to search.</param>
+        /// <param name="startIndex">Search start index.</param>
+        /// <param name="endIndex">Index where whitespace was found.</param>
+        /// <returns>Substring from first symbol since start index until first whitespace.</returns>
+        /// <exception cref="OverflowException">Next whitespace is at index larger than
+        /// <see cref="F:System.Int32.MaxValue" />.</exception>
+        [System.Diagnostics.Contracts.Pure, NotNull]
+        public static string TakeSymbolsUntilWhitespace(this string text, int startIndex, out int endIndex) {
+            Contract.Requires(text != null);
             Contract.Requires(startIndex >= 0);
+            Contract.Ensures(Contract.Result<string>() != null);
 
-            if (startIndex > 0) {
-                self = self.Substring(startIndex);
+            if (text == string.Empty) {
+                endIndex = 0;
+                return string.Empty;
             }
 
-            int start = self.IndexOfNextSymbol();
-            int end = self.Substring(start).IndexOfNextWhitespace();
+            if (startIndex > 0) {
+                text = text.Substring(startIndex);
+            }
+
+            int start = text.IndexOfNextSymbol();
+            int end = text.Substring(start).IndexOfNextWhitespace();
             endIndex = start + end;
-            return self.Substring(start, end);
+            return text.Substring(start, end);
         }
 
-        /// <summary> Converts string representation of Int64 to actual Int64.
+        /// <summary> Converts string representation of long to an actual long.
         ///  Treats null and whitespace strings as 0. </summary>
-        /// <param name="self">String to convert.</param>
+        /// <param name="longRepr">String to convert.</param>
         /// <returns> Converted string. </returns>
-        [Pure]
-        public static long ToInt64(this string self) {
-            return !String.IsNullOrWhiteSpace(self) ? Convert.ToInt64(self) : 0;
+        /// <exception cref="FormatException"><paramref name="longRepr" /> does not consist of an optional sign
+        ///  followed by a sequence of digits (0 through 9), and is not a null or whitespace string. </exception>
+        /// <exception cref="OverflowException"><paramref name="longRepr" /> represents a number that is less than
+        /// <see cref="F:System.Int64.MinValue" /> or greater than <see cref="F:System.Int64.MaxValue" />. </exception>
+        [System.Diagnostics.Contracts.Pure]
+        public static long ToInt64([CanBeNull] this string longRepr) {
+            // This extension method can be called on null string by design.
+            return !string.IsNullOrWhiteSpace(longRepr) ? Convert.ToInt64(longRepr) : 0;
         }
 
-        /// <summary> Converts string representation of Int32 to actual Int32.
+        /// <summary> Converts string representation of integer to an actual integer.
         ///  Treats null and whitespace strings as 0. </summary>
-        /// <param name="self">String to convert.</param>
+        /// <param name="intRepr">String to convert.</param>
         /// <returns> Converted string. </returns>
-        [Pure]
-        public static int ToInt32(this string self) {
-            return !String.IsNullOrWhiteSpace(self) ? Convert.ToInt32(self) : 0;
+        /// <exception cref="FormatException"><paramref name="intRepr" /> does not consist of an optional sign
+        ///  followed by a sequence of digits (0 through 9), and is not a null or whitespace string. </exception>
+        /// <exception cref="OverflowException"><paramref name="intRepr" /> represents a number that is less than
+        /// <see cref="F:System.Int32.MinValue" /> or greater than <see cref="F:System.Int32.MaxValue" />. </exception>
+        [System.Diagnostics.Contracts.Pure]
+        public static int ToInt32([CanBeNull] this string intRepr) {
+            // This extension method can be called on null string by design.
+            return !string.IsNullOrWhiteSpace(intRepr) ? Convert.ToInt32(intRepr) : 0;
         }
     }
 }

@@ -1,20 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
-using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using ArchiveCompare;
 using CommandLine;
 
 namespace Arcomp {
     class Program {
-        private static readonly string ArchiveStartMark = Environment.NewLine + "Listing archive: ";
-
         static void Main(string[] args) {
             //AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
 
@@ -22,10 +14,10 @@ namespace Arcomp {
             if (!Parser.Default.ParseArgumentsStrict(args, options)) { Environment.Exit(1); }
 
             string archiveName = Path.Combine(Directory.GetCurrentDirectory(), "*");
-            var result = ExecuteSevenZipProcess("l " + archiveName); // "-slt"
+            var result = ExecuteSevenZipProcess("l -slt " + archiveName); // "-slt"
             Console.WriteLine(result);
             var archives = SevenZip.CreateFromOutput(result).ToArray();
-            var first = archives.FirstOrDefault();
+
             Console.ReadKey();
         }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Contracts;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archived file. </summary>
@@ -13,6 +14,8 @@ namespace ArchiveCompare {
         public FileEntry(string name, FolderEntry parent = null, DateTime? lastModified = null, long size = 0,
             long packedSize = 0)
             : base(name, parent, lastModified, size, packedSize) {
+            Contract.Requires(size >= 0);
+            Contract.Requires(packedSize >= 0);
         }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>

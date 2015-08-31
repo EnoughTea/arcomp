@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents single archive entry. </summary>
@@ -13,7 +14,7 @@ namespace ArchiveCompare {
         ///  no compression was done on the entry.</param>
         protected Entry(string name, FolderEntry parent = null, DateTime? lastModified = null, long size = 0,
             long packedSize = 0) {
-            Contract.Requires(!String.IsNullOrEmpty(name));
+            Contract.Requires(!string.IsNullOrEmpty(name));
             Contract.Requires(size >= 0);
 
             Name = name;
@@ -24,6 +25,7 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the archive entry name.</summary>
+        [NotNull]
         public string Name { get; }
 
         /// <summary> Gets or sets the date when file was last modified.

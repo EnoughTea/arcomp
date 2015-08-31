@@ -11,13 +11,13 @@ namespace Arcomp {
         /// <param name="startIndex">The zero-based starting character position of a substring in this instance.
         /// </param>
         /// <returns>A string that is that begins at startIndex in this instance and ends at target string position,
-        ///  or String.Empty if startIndex is equal to the length of this instance or instance is empty .</returns>
+        ///  or string.Empty if startIndex is equal to the length of this instance or instance is empty .</returns>
         public static string Substring(this string self, string target, int startIndex = 0) {
             Contract.Requires(self != null);
             Contract.Requires(startIndex >= 0);
 
-            string result = String.Empty;
-            if (self != String.Empty) {
+            string result = string.Empty;
+            if (self != string.Empty) {
                 int targetIndex = self.IndexOf(target, startIndex, StringComparison.OrdinalIgnoreCase);
                 int length = targetIndex - startIndex;
                 if (targetIndex >= 0 && length > 0) {
@@ -76,7 +76,7 @@ namespace Arcomp {
         /// <param name="self">String to convert.</param>
         /// <returns> Converted string. </returns>
         public static long ToInt64(this string self) {
-            return !String.IsNullOrEmpty(self) ? Convert.ToInt64(self) : 0;
+            return !string.IsNullOrEmpty(self) ? Convert.ToInt64(self) : 0;
         }
 
         /// <summary> Converts string representation of Int32 to actual Int32.
@@ -84,7 +84,7 @@ namespace Arcomp {
         /// <param name="self">String to convert.</param>
         /// <returns> Converted string. </returns>
         public static int ToInt32(this string self) {
-            return !String.IsNullOrEmpty(self) ? Convert.ToInt32(self) : 0;
+            return !string.IsNullOrEmpty(self) ? Convert.ToInt32(self) : 0;
         }
     }
 }

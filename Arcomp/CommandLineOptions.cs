@@ -27,7 +27,7 @@ namespace Arcomp {
         private void HandleParsingErrorsInHelp(HelpText help) {
             if (LastParserState.Errors.Any()) {
                 var errors = help.RenderParsingErrorsText(this, 2);
-                if (!String.IsNullOrEmpty(errors)) {
+                if (!string.IsNullOrEmpty(errors)) {
                     help.AddPreOptionsLine(Environment.NewLine + "Error(s):");
                     help.AddPreOptionsLine(errors);
                 }

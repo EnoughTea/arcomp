@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Archive split over several files. </summary>
@@ -18,12 +19,15 @@ namespace ArchiveCompare {
             long totalPhysicalSize = 0)
             : base(name, ArchiveType.Split, lastModified, physicalSize) {
             Contract.Requires(nested != null);
+            Contract.Requires(physicalSize >= 0);
+            Contract.Requires(totalPhysicalSize >= 0);
 
             Nested = nested;
             _totalPhysicalSize = totalPhysicalSize;
         }
 
         /// <summary> Gets the nested archive. </summary>
+        [NotNull]
         public SingleArchive Nested { get; }
 
         /// <summary> Gets total size of the archive as reported by file system. </summary>
