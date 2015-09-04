@@ -21,7 +21,7 @@ namespace ArchiveCompare {
             ParentFolder = parent;
             Size = size;
             PackedSize = packedSize;
-            LastModifed = lastModified;
+            LastModified = lastModified;
         }
 
         /// <summary> Gets the archive entry name.</summary>
@@ -30,7 +30,7 @@ namespace ArchiveCompare {
 
         /// <summary> Gets or sets the date when file was last modified.
         ///  Null means modified date in unavailable.</summary>
-        public DateTime? LastModifed { get; }
+        public DateTime? LastModified { get; }
 
         /// <summary> Gets or sets the uncompressed size. 0 means that entry is a folder or
         ///  uncompressed size is unavailable. </summary>
@@ -48,7 +48,8 @@ namespace ArchiveCompare {
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
-            return Name;
+            string lastModified = (LastModified != null) ? ", modified on " + LastModified : string.Empty;
+            return Name + lastModified;
         }
     }
 }

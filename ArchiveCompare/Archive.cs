@@ -77,7 +77,8 @@ namespace ArchiveCompare {
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
-            return Name;
+            string lastModified = (LastModified != null) ? ", modified on " + LastModified : string.Empty;
+            return Name + lastModified + ", physical size " + PhysicalSize;
         }
 
         /// <summary> Converts archive type to string representation. </summary>
@@ -86,29 +87,31 @@ namespace ArchiveCompare {
         public static string TypeToString(ArchiveType type) {
             Contract.Ensures(Contract.Result<string>() != null);
 
-            return TypesToNames.GetValue(type) ?? string.Empty;
+            return TypesToNames.GetValue(type)?.ToLowerInvariant() ?? string.Empty;
         }
 
         /// <summary> Converts archive type string representation to the archive type. </summary>
         /// <param name="typeName">Archive type string representation.</param>
         /// <returns>Archive type corresponding to the given string.</returns>
         public static ArchiveType StringToType([CanBeNull] string typeName) {
-            return !string.IsNullOrEmpty(typeName) ? NamesToTypes.GetValue(typeName) : ArchiveType.Unknown;
+            return !string.IsNullOrEmpty(typeName)
+                ? NamesToTypes.GetValue(typeName.ToLowerInvariant())
+                : ArchiveType.Unknown;
         }
 
         private static readonly Dictionary<ArchiveType, string> TypesToNames = new Dictionary<ArchiveType, string> {
             { ArchiveType.BZip2, "bzip2" },
             { ArchiveType.GZip, "gzip" },
             { ArchiveType.Mbr, "mbr" },
-            { ArchiveType.Pe, "PE" },
-            { ArchiveType.Rar, "Rar" },
+            { ArchiveType.Pe, "pe" },
+            { ArchiveType.Rar, "rar" },
             { ArchiveType.Tar, "tar" },
             { ArchiveType.Vhd, "vhd" },
             { ArchiveType.Xz, "xz" },
             { ArchiveType.Zip, "zip" },
             { ArchiveType.SevenZip, "7z" },
-            { ArchiveType.Split, "Split" },
-            { ArchiveType.Unknown, string.Empty }
+            { ArchiveType.Split, "split" },
+            { ArchiveType.Unknown, "unknown" }
         };
 
         private static readonly Dictionary<string, ArchiveType> NamesToTypes = TypesToNames

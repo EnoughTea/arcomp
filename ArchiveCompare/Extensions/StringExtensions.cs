@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using JetBrains.Annotations;
@@ -88,21 +89,7 @@ namespace ArchiveCompare {
             return text.Substring(start, end);
         }
 
-        /// <summary> Converts string representation of long to an actual long.
-        ///  Treats null and whitespace strings as 0. </summary>
-        /// <param name="longRepr">String to convert.</param>
-        /// <returns> Converted string. </returns>
-        /// <exception cref="FormatException"><paramref name="longRepr" /> does not consist of an optional sign
-        ///  followed by a sequence of digits (0 through 9), and is not a null or whitespace string. </exception>
-        /// <exception cref="OverflowException"><paramref name="longRepr" /> represents a number that is less than
-        /// <see cref="F:System.Int64.MinValue" /> or greater than <see cref="F:System.Int64.MaxValue" />. </exception>
-        [System.Diagnostics.Contracts.Pure]
-        public static long ToInt64([CanBeNull] this string longRepr) {
-            // This extension method can be called on null string by design.
-            return !string.IsNullOrWhiteSpace(longRepr) ? Convert.ToInt64(longRepr) : 0;
-        }
-
-        /// <summary> Converts string representation of integer to an actual integer.
+        /// <summary> Converts string representation of decimal integer to an actual integer.
         ///  Treats null and whitespace strings as 0. </summary>
         /// <param name="intRepr">String to convert.</param>
         /// <returns> Converted string. </returns>
@@ -113,7 +100,11 @@ namespace ArchiveCompare {
         [System.Diagnostics.Contracts.Pure]
         public static int ToInt32([CanBeNull] this string intRepr) {
             // This extension method can be called on null string by design.
-            return !string.IsNullOrWhiteSpace(intRepr) ? Convert.ToInt32(intRepr) : 0;
+            if (string.IsNullOrWhiteSpace(intRepr)) { return 0; }
+
+            return !string.IsNullOrWhiteSpace(intRepr)
+                ? Int32.Parse(intRepr, NumberStyles.Number, CultureInfo.InvariantCulture)
+                : 0;
         }
     }
 }

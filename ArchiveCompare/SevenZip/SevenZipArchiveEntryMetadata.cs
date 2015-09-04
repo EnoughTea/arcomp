@@ -16,6 +16,8 @@ namespace ArchiveCompare {
 
         public string Attributes { get; set; }
 
+        public int Crc { get; set; }
+
         public bool IsDirectory => Attributes != null && Attributes.Contains("D");
 
         /// <summary> Makes entry from this metadata. </summary>
@@ -29,7 +31,7 @@ namespace ArchiveCompare {
 
             return IsDirectory
                 ? (Entry)new FolderEntry(Name, null, LastModified, Size, PackedSize)
-                : new FileEntry(Name, null, LastModified, Size, PackedSize);
+                : new FileEntry(Name, null, LastModified, Size, PackedSize, Crc);
         }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
@@ -76,13 +78,14 @@ namespace ArchiveCompare {
             string attributes = simpleLineEntry.Substring(20, 5).Trim();
             string size = simpleLineEntry.Substring(26, 12).Trim();
             string packedSize = simpleLineEntry.Substring(39, 12).Trim();
-            string modified = simpleLineEntry.Substring(0, 19);
+            string modified = simpleLineEntry.Substring(0, 19).Trim();
             return new SevenZipArchiveEntryMetadata {
                 Name = name,
                 Attributes = SevenZipTools.AttributesFromString(attributes),
                 LastModified = SevenZipTools.DateFromString(modified),
                 Size = SevenZipTools.LongFromString(size),
-                PackedSize = SevenZipTools.LongFromString(packedSize)
+                PackedSize = SevenZipTools.LongFromString(packedSize),
+                Crc = -1
             };
         }
 
@@ -94,16 +97,13 @@ namespace ArchiveCompare {
             string name = entryData.GetValue("Path");
             if (string.IsNullOrWhiteSpace(name)) { return null; }
 
-            string attributes = entryData.GetValue("Attributes");
-            string size = entryData.GetValue("Size");
-            string packedSize = entryData.GetValue("Packed Size");
-            string modified = entryData.GetValue("Modified");
             var result = new SevenZipArchiveEntryMetadata {
                 Name = name,
-                Attributes = SevenZipTools.AttributesFromString(attributes),
-                LastModified = SevenZipTools.DateFromString(modified),
-                Size = SevenZipTools.LongFromString(size),
-                PackedSize = SevenZipTools.LongFromString(packedSize)
+                Attributes = SevenZipTools.AttributesFromString(entryData.GetValue("Attributes")),
+                LastModified = SevenZipTools.DateFromString(entryData.GetValue("Modified")),
+                Size = SevenZipTools.LongFromString(entryData.GetValue("Size")),
+                PackedSize = SevenZipTools.LongFromString(entryData.GetValue("Packed Size")),
+                Crc = SevenZipTools.IntFromString(entryData.GetValue("CRC"), true)
             };
 
             return result;

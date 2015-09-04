@@ -10,18 +10,24 @@ namespace ArchiveCompare {
         /// <param name="lastModified">The date when file was last modified.</param>
         /// <param name="size">Uncompressed size. 0 means uncompressed size is unavailable.</param>
         /// <param name="packedSize">Compressed size. 0 means that either compressed size is unavailable or
-        ///  no compression was done on the entry.</param>
+        /// no compression was done on the entry.</param>
+        /// <param name="crc">File checksum, values less than zero means CRC in unavailable.</param>
         public FileEntry(string name, FolderEntry parent = null, DateTime? lastModified = null, long size = 0,
-            long packedSize = 0)
+            long packedSize = 0, int crc = -1)
             : base(name, parent, lastModified, size, packedSize) {
             Contract.Requires(size >= 0);
             Contract.Requires(packedSize >= 0);
+
+            Crc = crc;
         }
+
+        /// <summary> File checksum, values less than zero means CRC in unavailable. </summary>
+        public int Crc { get; }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
-            return "file '" + base.ToString() + "'";
+            return "file " + base.ToString() +", size " + Size + ", packed size " + PackedSize;
         }
     }
 }

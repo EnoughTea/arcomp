@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
@@ -106,24 +107,56 @@ namespace ArchiveCompare {
         /// <exception cref="RegexMatchTimeoutException">A regex time-out occurred.</exception>
         /// <exception cref="OverflowException"><paramref name="longRepr" /> represents a number that is less than
         /// <see cref="F:System.Int64.MinValue" /> or greater than <see cref="F:System.Int64.MaxValue" />. </exception>
-        public static long LongFromString([CanBeNull] string longRepr) {
-            if (!string.IsNullOrWhiteSpace(longRepr) && !IntegerChecker.IsMatch(longRepr)) {
-                throw new ArgumentException("Unknown number format in 7-Zip entry.", nameof(longRepr));
+        public static long LongFromString([CanBeNull] string longRepr, bool hex = false) {
+            if (string.IsNullOrWhiteSpace(longRepr)) { return 0; }
+
+            long parsed;
+            if (hex) {
+                bool isHex = HexChecker.IsMatch(longRepr);
+                if (!isHex) {
+                    throw new ArgumentException("Unknown hexadecimal number format in 7-Zip entry.", nameof(longRepr));
+                }
+
+                parsed = Int64.Parse(longRepr, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+
+            } else {
+                bool isDec = DecChecker.IsMatch(longRepr);
+                if (!isDec) {
+                    throw new ArgumentException("Unknown decimal number format in 7-Zip entry.", nameof(longRepr));
+                }
+
+                parsed = Int64.Parse(longRepr, NumberStyles.Integer, CultureInfo.InvariantCulture);
             }
 
-            return longRepr.ToInt64();
+            return parsed;
         }
 
         /// <exception cref="ArgumentException">Unknown number format in 7-Zip entry.</exception>
         /// <exception cref="RegexMatchTimeoutException">A regex time-out occurred.</exception>
         /// <exception cref="OverflowException"><paramref name="intRepr" /> represents a number that is less than
         /// <see cref="F:System.Int32.MinValue" /> or greater than <see cref="F:System.Int32.MaxValue" />. </exception>
-        public static long IntFromString([CanBeNull] string intRepr) {
-            if (!string.IsNullOrWhiteSpace(intRepr) && !IntegerChecker.IsMatch(intRepr)) {
-                throw new ArgumentException("Unknown number format in 7-Zip entry.", nameof(intRepr));
+        public static int IntFromString([CanBeNull] string intRepr, bool hex = false) {
+            if (string.IsNullOrWhiteSpace(intRepr)) { return 0; }
+
+            int parsed;
+            if (hex) {
+                bool isHex = HexChecker.IsMatch(intRepr);
+                if (!isHex) {
+                    throw new ArgumentException("Unknown hexadecimal number format in 7-Zip entry.", nameof(intRepr));
+                }
+
+                parsed = Int32.Parse(intRepr, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+
+            } else {
+                bool isDec = DecChecker.IsMatch(intRepr);
+                if (!isDec) {
+                    throw new ArgumentException("Unknown decimal number format in 7-Zip entry.", nameof(intRepr));
+                }
+
+                parsed = Int32.Parse(intRepr, NumberStyles.Integer, CultureInfo.InvariantCulture);
             }
 
-            return intRepr.ToInt32();
+            return parsed;
         }
 
         /// <exception cref="ArgumentException">Unknown date format in 7-Zip entry
@@ -224,11 +257,13 @@ namespace ArchiveCompare {
         /// <summary> Pattern used to split name and value in the archive metadata section.</summary>
         private const string DataEqualsMark = " = ";
 
+        // These are used to check 7-Zip data strings to catch possible errors early:
         private const RegexOptions StandardOptions = RegexOptions.CultureInvariant;
         private static readonly Regex DateChecker = new Regex(@"^\d+-\d+-\d+$", StandardOptions);
         private static readonly Regex TimeChecker = new Regex(@"^\d+:\d+:\d+$", StandardOptions);
         private static readonly Regex AttributesChecker = new Regex(@"^[DRHASIL\.]+$", StandardOptions);
-        private static readonly Regex IntegerChecker = new Regex(@"^\d+$", StandardOptions);
+        private static readonly Regex DecChecker = new Regex(@"^\d+$", RegexOptions.CultureInvariant);
+        private static readonly Regex HexChecker = new Regex(@"^[\da-fA-F]+$", RegexOptions.CultureInvariant);
 
         internal static readonly string[] NewLine = { Environment.NewLine };
         internal static readonly string[] EmptyLine = { Environment.NewLine + Environment.NewLine };

@@ -67,6 +67,23 @@ namespace ArchiveCompare {
             }
         }
 
+        /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
+        /// <returns> A <see cref="string" /> that represents this instance. </returns>
+        public override string ToString() {
+            string folders = FolderCount > 0 ? FolderCount + " folders" : string.Empty;
+            string files = FileCount > 0 ? FileCount + " files" : string.Empty;
+            string combined = string.Empty;
+            if (files != string.Empty && folders != string.Empty) {
+                combined = ": " + files + " & " + folders;
+            } else if (files != string.Empty) {
+                combined = ": " + files;
+            } else if (folders != string.Empty) {
+                combined = ": " + folders;
+            }
+
+            return base.ToString() + " - (unpacked " + Size + ", packed " + PackedSize + ")" + combined;
+        }
+
         /// <summary> Initializes archive with entries. </summary>
         /// <param name="entries">Uninitialized archive entries.</param>
         private void Initialize(IEnumerable<Entry> entries) {
@@ -91,8 +108,8 @@ namespace ArchiveCompare {
                 calculatedContentSize += entry.Size;
                 calculatedPackedSize += entry.PackedSize;
                 // Archive's last modified is the latest modified file.
-                if (entry.LastModifed != null && entry.LastModifed.Value > maxLastModified) {
-                    maxLastModified = entry.LastModifed.Value;
+                if (entry.LastModified != null && entry.LastModified.Value > maxLastModified) {
+                    maxLastModified = entry.LastModified.Value;
                 }
 
                 // Look for parent entry to link with:

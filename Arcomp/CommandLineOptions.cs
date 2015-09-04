@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using CommandLine;
 using CommandLine.Text;
@@ -6,6 +7,14 @@ using CommandLine.Text;
 namespace Arcomp {
     /// <summary> Holds all available command line options. </summary>
     internal sealed class CommandLineOptions {
+        [OptionList('s', "show", Required = false, DefaultValue = new string[0],
+            HelpText = "Shows archive metadata.", MutuallyExclusiveSet = "show")]
+        public IList<string> Show { get; set; }
+
+        [OptionList('c', "compare", Required = false, DefaultValue = new string[0],
+            HelpText = "Compares two archives.", MutuallyExclusiveSet = "compare")]
+        public IList<string> Compare { get; set; }
+
         [ParserState]
         public IParserState LastParserState { get; set; }
 
@@ -18,7 +27,7 @@ namespace Arcomp {
             };
 
             HandleParsingErrorsInHelp(help);
-            help.AddPreOptionsLine("Usage: arcomp /TODO");
+            help.AddPreOptionsLine("Usage: arcomp -l *");
             help.AddOptions(this);
 
             return help;
