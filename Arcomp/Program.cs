@@ -27,23 +27,13 @@ namespace Arcomp {
         }
 
         private static void ShowArchiveMetadata(IList<string> show) {
-            foreach (var archive in show) {
-                // TODO: support wildcards?
-                string archiveName = archive;
-                if (!Path.IsPathRooted(archive)) {
-                    archiveName = Path.Combine(Directory.GetCurrentDirectory(), archive);
-                }
+            var archiveFiles = PathTools.GatherFiles(show);
+            string allFiles = archiveFiles.Aggregate(string.Empty, (rest, next) => rest + "\"" + next + "\" ").Trim();
 
-                var fi = new FileInfo(archiveName);
-                if (fi.Exists) {
-                    var result = ExecuteSevenZipProcess("l -slt " + archiveName);
-                    var archives = SevenZip.CreateFromOutput(result).ToArray();
-                    var firstArchive = archives.FirstOrDefault();
-                    if (firstArchive != null) {
-                        ConsoleTools.Info(firstArchive.ToString());
-                    }
-                }
-
+            var result = ExecuteSevenZipProcess("l -slt " + allFiles);
+            var archives = SevenZip.CreateFromOutput(result).ToArray();
+            foreach (var archive in archives) {
+                ConsoleTools.Info(archive.ToString());
                 ConsoleTools.WriteLine();
             }
         }
@@ -62,13 +52,21 @@ namespace Arcomp {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
+                RedirectStandardInput = true,   // 7z can ask for password.
                 FileName = Path.Combine(sevenZipPath, sevenZipExe),
                 Arguments = arguments
             };
-
+            // Yeah, obviously password-protected archives are not supported.
             using (var p = new Process { StartInfo = startInfo }) {
                 p.Start();
-                return ReadAllOutput(p.StandardOutput);
+                p.StandardInput.AutoFlush = true;
+                string output = string.Empty;
+                while (!p.HasExited) {
+                    output += ReadAllOutput(p.StandardOutput);
+                    p.StandardInput.WriteLine("dummy line in case 7z is asking for password");
+                }
+
+                return output;
             }
         }
 
