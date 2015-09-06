@@ -9,14 +9,8 @@ namespace ArchiveCompare {
         /// <param name="sevenZipConsoleListingOutput">The 7-Zip 'l -slt' command output.</param>
         /// <returns> Created archives. </returns>
         [NotNull]
-        public static IEnumerable<Archive> CreateFromOutput(string sevenZipConsoleListingOutput) {
-            var metadatas = SevenZipArchiveMetadata.ParseMany(sevenZipConsoleListingOutput);
-            foreach (var metadata in metadatas) {
-                Archive archive = null;
-                try { archive = metadata.ToArchive(); } catch (InvalidOperationException) { }
-
-                if (archive != null) { yield return archive; }
-            }
+        public static IEnumerable<Archive> ArchivesFromOutput(string sevenZipConsoleListingOutput) {
+            return SevenZipParser.ParseArchives(sevenZipConsoleListingOutput);
         }
     }
 }

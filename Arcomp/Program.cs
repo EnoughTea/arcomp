@@ -27,11 +27,14 @@ namespace Arcomp {
         }
 
         private static void ShowArchiveMetadata(IList<string> show) {
-            var archiveFiles = PathTools.GatherFiles(show);
-            string allFiles = archiveFiles.Aggregate(string.Empty, (rest, next) => rest + "\"" + next + "\" ").Trim();
+            var archiveFiles = PathTools.GatherFiles(show).ToArray();
+            StringBuilder totalOutput = new StringBuilder();
+            foreach (var archiveFile in archiveFiles) {
+                var fileOutput = ExecuteSevenZipProcess("l -slt " + archiveFile);
+                totalOutput.Append(fileOutput);
+            }
 
-            var result = ExecuteSevenZipProcess("l -slt " + allFiles);
-            var archives = SevenZip.CreateFromOutput(result).ToArray();
+            var archives = SevenZip.ArchivesFromOutput(totalOutput.ToString()).ToArray();
             foreach (var archive in archives) {
                 ConsoleTools.Info(archive.ToString());
                 ConsoleTools.WriteLine();

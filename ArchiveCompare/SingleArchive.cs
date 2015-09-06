@@ -115,7 +115,7 @@ namespace ArchiveCompare {
                 // Look for parent entry to link with:
                 var parent = directories.GetValue(Path.GetDirectoryName(entry.Name));
                 if (parent != null) {
-                    parent.Contents.Add(entry);
+                    parent.Add(entry);
                     entry.ParentFolder = parent;
                 } else {    // No parent entry means a root entry.
                     _contents.Add(entry);

@@ -124,19 +124,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Archive.cs" />
-    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Entry.cs" />
+    <Compile Include="ArchiveDifference.cs" />
+    <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="FileEntry.cs" />
     <Compile Include="FolderEntry.cs" />
     <Compile Include="SevenZip\SevenZip.cs" />
     <Compile Include="SevenZip\SevenZipArchiveListing.cs" />
+    <Compile Include="SevenZip\SevenZipParser.cs" />
     <Compile Include="SevenZip\SevenZipTools.cs" />
-    <Compile Include="SplitArchive.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SevenZip\SevenZipArchiveMetadata.cs" />
-    <Compile Include="SevenZip\SevenZipArchiveEntryMetadata.cs" />
-    <Compile Include="SingleArchive.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="SingleArchive.cs" />
+    <Compile Include="SplitArchive.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JetBrains.Annotations.PCL328, Version=9.2.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
