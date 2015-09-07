@@ -123,23 +123,27 @@
     <DocumentationFile>bin\Release\ArchiveCompare.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Archive differences\ArchivePhysicalSizeDifference.cs" />
+    <Compile Include="Archive differences\ArchiveTotalPhysicalSizeDifference.cs" />
+    <Compile Include="Entry differences\EntryFileNameDifference.cs" />
+    <Compile Include="Entry differences\EntryTraitDifference.cs" />
     <Compile Include="Archive.cs" />
     <Compile Include="ArchiveType.cs" />
-    <Compile Include="Differences\FileCountDifference.cs" />
-    <Compile Include="Differences\FileNameDifference.cs" />
-    <Compile Include="Differences\FolderCountDifference.cs" />
-    <Compile Include="Differences\LastModifiedDifference.cs" />
-    <Compile Include="Differences\PackedSizeDifference.cs" />
-    <Compile Include="Differences\SizeDifference.cs" />
+    <Compile Include="Archive differences\ArchiveFileCountDifference.cs" />
+    <Compile Include="Archive differences\ArchiveFileNameDifference.cs" />
+    <Compile Include="Archive differences\ArchiveFolderCountDifference.cs" />
+    <Compile Include="Archive differences\ArchiveLastModifiedDifference.cs" />
+    <Compile Include="Archive differences\ArchivePackedSizeDifference.cs" />
+    <Compile Include="Archive differences\ArchiveSizeDifference.cs" />
     <Compile Include="Entry.cs" />
-    <Compile Include="Differences\ArchiveTraitDifference.cs" />
+    <Compile Include="Archive differences\ArchiveTraitDifference.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="FileEntry.cs" />
     <Compile Include="FolderEntry.cs" />
-    <Compile Include="SevenZip\SevenZip.cs" />
-    <Compile Include="SevenZip\SevenZipArchiveListing.cs" />
-    <Compile Include="SevenZip\SevenZipParser.cs" />
-    <Compile Include="SevenZip\SevenZipTools.cs" />
+    <Compile Include="7-Zip\SevenZip.cs" />
+    <Compile Include="7-Zip\SevenZipArchiveListing.cs" />
+    <Compile Include="7-Zip\SevenZipParser.cs" />
+    <Compile Include="7-Zip\SevenZipTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="SingleArchive.cs" />

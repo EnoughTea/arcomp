@@ -1,12 +1,12 @@
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
-    /// <summary> Represents an archive difference by file count. </summary>
-    public class PackedSizeDifference : ArchiveTraitDifference {
-        /// <summary> Initializes a new instance of the <see cref="FileCountDifference"/> class. </summary>
+    /// <summary> Represents an archive difference by packed size. </summary>
+    public class ArchivePackedSizeDifference : ArchiveTraitDifference {
+        /// <summary> Initializes a new instance of the <see cref="ArchivePackedSizeDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>
-        public PackedSizeDifference([CanBeNull] Archive left, [CanBeNull] Archive right)
+        public ArchivePackedSizeDifference([CanBeNull] Archive left, [CanBeNull] Archive right)
             : base(left, right) {
         }
 

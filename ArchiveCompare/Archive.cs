@@ -112,8 +112,11 @@ namespace ArchiveCompare {
             .ToDictionary(key => key.Value, value => value.Key);
 
 
-        private static readonly List<Type> Comparisons = new List<Type> {
-            typeof(FileNameDifference), typeof(FileCountDifference), typeof(FolderCountDifference)
+        private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
+            typeof(ArchiveFileNameDifference), typeof(ArchiveFileCountDifference),
+            typeof(ArchiveFolderCountDifference), typeof(ArchiveLastModifiedDifference),
+            typeof(ArchivePackedSizeDifference), typeof(ArchivePhysicalSizeDifference),
+            typeof(ArchiveSizeDifference), typeof(ArchiveTotalPhysicalSizeDifference)
         };
     }
 }

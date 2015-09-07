@@ -17,13 +17,21 @@ namespace ArchiveCompare {
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public abstract bool DifferenceExists { get; }
 
+        /// <summary> Initializes comparison from any two archives. </summary>
+        /// <param name="left">Left archive.</param>
+        /// <param name="right">Right archive.</param>
+        /// <returns>true if comparison of any two archives by this trait can be performed; false otherwise.</returns>
+        protected virtual bool InitFromArchives(Archive left, Archive right) {
+            return false;
+        }
+
         /// <summary> Initializes comparison from two single archives. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>
         /// <returns>true if comparison of two single archives by this trait can be performed;
         ///  false otherwise.</returns>
         protected virtual bool InitFromSingles(SingleArchive left, SingleArchive right) {
-            return false;
+            return InitFromArchives(left, right);
         }
 
         /// <summary> Initializes comparison from two split archives. </summary>
