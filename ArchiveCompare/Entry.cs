@@ -1,10 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents single archive entry. </summary>
     public abstract class Entry {
+        #region Static methods
+
+        /// <summary> Finds differences between archives. </summary>
+        /// <param name="left">'Left' archive.</param>
+        /// <param name="right">'Right' archive.</param>
+        public static IEnumerable<EntryTraitDifference> Diff(Entry left, Entry right) {
+            Contract.Requires(left != null);
+            Contract.Requires(right != null);
+
+            return Comparisons
+                .Select(cmpType => (EntryTraitDifference)Activator.CreateInstance(cmpType, left, right))
+                .Where(cmp => cmp != null && cmp.ComparisonExists && cmp.DifferenceExists);
+        }
+
+        #endregion
+
         /// <summary> Initializes a new instance of the <see cref="Entry" /> class. </summary>
         /// <param name="name">Full file or folder name.</param>
         /// <param name="lastModified">The date when file was last modified.</param>
@@ -59,5 +77,10 @@ namespace ArchiveCompare {
             Contract.Invariant(Size >= 0);
             Contract.Invariant(PackedSize >= 0);
         }
+
+        private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
+            typeof(EntryFileNameDifference), typeof(EntryParentFolderDifference), typeof(EntryLastModifiedDifference),
+            typeof(EntrySizeDifference), typeof(EntryPackedSizeDifference), typeof(EntryCrcDifference)
+        };
     }
 }

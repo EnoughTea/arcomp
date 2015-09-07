@@ -4,7 +4,7 @@ using JetBrains.Annotations;
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by some trait. </summary>
     public abstract class EntryTraitDifference {
-        /// <summary> Initializes a new instance of the <see cref="ArchiveTraitDifference"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="EntryTraitDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>
         protected EntryTraitDifference([CanBeNull] Entry left, [CanBeNull] Entry right) {

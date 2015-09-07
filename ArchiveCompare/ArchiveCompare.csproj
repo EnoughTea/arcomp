@@ -125,7 +125,12 @@
   <ItemGroup>
     <Compile Include="Archive differences\ArchivePhysicalSizeDifference.cs" />
     <Compile Include="Archive differences\ArchiveTotalPhysicalSizeDifference.cs" />
+    <Compile Include="Entry differences\EntryCrcDifference.cs" />
     <Compile Include="Entry differences\EntryFileNameDifference.cs" />
+    <Compile Include="Entry differences\EntryLastModifiedDifference.cs" />
+    <Compile Include="Entry differences\EntryPackedSizeDifference.cs" />
+    <Compile Include="Entry differences\EntryParentFolderDifference.cs" />
+    <Compile Include="Entry differences\EntrySizeDifference.cs" />
     <Compile Include="Entry differences\EntryTraitDifference.cs" />
     <Compile Include="Archive.cs" />
     <Compile Include="ArchiveType.cs" />

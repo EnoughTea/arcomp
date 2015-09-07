@@ -29,6 +29,9 @@ namespace ArchiveCompare {
         [NotNull]
         public IEnumerable<Entry> Contents => _contents;
 
+        /// <summary> Gets the amount of entries in top level of this folder. </summary>
+        public int ContentsCount => _contents.Count;
+
         /// <summary> Determines whether this entry has the specified entry as top-level child. </summary>
         /// <param name="entry">Entry to check.</param>
         /// <returns>true if the specified entry is a top-level child; false otherwise.</returns>

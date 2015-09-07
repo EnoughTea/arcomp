@@ -12,8 +12,8 @@ namespace ArchiveCompare {
         ///     no compression was done on the entry.</param>
         /// <param name="crc">File checksum, values less than zero means CRC in unavailable.</param>
         /// <param name="parent">Parent directory. Null means entry is located at archive's root.</param>
-        public FileEntry(string name, DateTime? lastModified = null, long size = 0, long packedSize = 0, int crc = -1,
-            FolderEntry parent = null)
+        public FileEntry(string name, DateTime? lastModified = null, long size = 0, long packedSize = 0,
+            int crc = NoCrc, FolderEntry parent = null)
             : base(name, lastModified,  size, packedSize, parent) {
             Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Contract.Requires(size >= 0);
@@ -30,5 +30,8 @@ namespace ArchiveCompare {
         public override string ToString() {
             return "file " + base.ToString() +", size " + Size + ", packed size " + PackedSize;
         }
+
+        /// <summary> Means CRC is unavailable. </summary>
+        internal const int NoCrc = -1;
     }
 }
