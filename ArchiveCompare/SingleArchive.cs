@@ -13,13 +13,13 @@ namespace ArchiveCompare {
         /// <param name="name">Archive name.</param>
         /// <param name="type">Archive type.</param>
         /// <param name="entries">Uninitialized archive entries.</param>
-        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
         /// <param name="physicalSize">Size of the archive as reported by file system.</param>
         /// <param name="size">Uncompressed contents size, 0 if unavailable. </param>
         /// <param name="packedSize">Cmpressed contents size, 0 if unavailable.</param>
-        public SingleArchive(string name, ArchiveType type, IEnumerable<Entry> entries, DateTime? lastModified = null,
-            long physicalSize = 0, long size = 0, long packedSize = 0)
-            : base (name, type, lastModified, physicalSize) {
+        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
+        public SingleArchive(string name, ArchiveType type, IEnumerable<Entry> entries,
+            long physicalSize = 0, long size = 0, long packedSize = 0, DateTime? lastModified = null)
+            : base (name, type, physicalSize, lastModified) {
             Contract.Requires(entries != null);
             Contract.Requires(size >= 0);
             Contract.Requires(physicalSize >= 0);
@@ -125,6 +125,15 @@ namespace ArchiveCompare {
             if (LastModified == null && maxLastModified != DateTime.MinValue) { LastModified = maxLastModified; }
             if (Size == 0) { Size = calculatedContentSize; }
             if (PackedSize == 0) { PackedSize = calculatedPackedSize; }
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant() {
+            Contract.Invariant(Contents != null);
+            Contract.Invariant(Size >= 0);
+            Contract.Invariant(PackedSize >= 0);
+            Contract.Invariant(FileCount >= 0);
+            Contract.Invariant(FolderCount >= 0);
         }
     }
 }

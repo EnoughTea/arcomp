@@ -5,43 +5,49 @@ using System.Linq;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
-    /// <summary> Known archive types. </summary>
-    public enum ArchiveType {
-        /// <summary> Unknown archive type. </summary>
-        Unknown,
-        /// <summary> Split archive, consisting of several volumes. </summary>
-        Split,
-        /// <summary> bzip2. </summary>
-        BZip2,
-        /// <summary> gzip. </summary>
-        GZip,
-        /// <summary> mbr. </summary>
-        Mbr,
-        /// <summary> PE. </summary>
-        Pe,
-        /// <summary> Rar. </summary>
-        Rar,
-        /// <summary> 7z. </summary>
-        SevenZip,
-        /// <summary> tar. </summary>
-        Tar,
-        /// <summary> xz. </summary>
-        Xz,
-        /// <summary> vhd. </summary>
-        Vhd,
-        /// <summary> zip. </summary>
-        Zip
-    }
-
     /// <summary> Base class for all archives. </summary>
     public abstract class Archive {
+        #region Static methods
+
+        /// <summary> Finds differences between archives. </summary>
+        /// <param name="left">'Left' archive.</param>
+        /// <param name="right">'Right' archive.</param>
+        public static IEnumerable<ArchiveTraitDifference> Diff(Archive left, Archive right) {
+            Contract.Requires(left != null);
+            Contract.Requires(right != null);
+
+            return Comparisons
+                .Select(cmpType => (ArchiveTraitDifference)Activator.CreateInstance(cmpType, left, right))
+                .Where(cmp => cmp != null && cmp.ComparisonExists && cmp.DifferenceExists);
+        }
+
+        /// <summary> Converts archive type to string representation. </summary>
+        /// <param name="type">Archive type.</param>
+        /// <returns>String representation of the given archive type.</returns>
+        public static string TypeToString(ArchiveType type) {
+            Contract.Ensures(Contract.Result<string>() != null);
+
+            return TypesToNames.GetValue(type)?.ToLowerInvariant() ?? string.Empty;
+        }
+
+        /// <summary> Converts archive type string representation to the archive type. </summary>
+        /// <param name="typeName">Archive type string representation.</param>
+        /// <returns>Archive type corresponding to the given string.</returns>
+        public static ArchiveType StringToType([CanBeNull] string typeName) {
+            return !string.IsNullOrEmpty(typeName)
+                ? NamesToTypes.GetValue(typeName.ToLowerInvariant())
+                : ArchiveType.Unknown;
+        }
+
+        #endregion
+
         /// <summary> Initializes a new instance of the <see cref="Archive" /> class. </summary>
         /// <param name="name">Archive name.</param>
         /// <param name="type">Archive type.</param>
-        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
         /// <param name="physicalSize">Size of the archive as reported by file system.</param>
-        protected Archive(string name, ArchiveType type, DateTime? lastModified = null, long physicalSize = 0) {
-            Contract.Requires(!string.IsNullOrEmpty(name));
+        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
+        protected Archive(string name, ArchiveType type, long physicalSize = 0, DateTime? lastModified = null) {
+            Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Contract.Requires(physicalSize >= 0);
 
             Name = name;
@@ -81,22 +87,10 @@ namespace ArchiveCompare {
             return Name + lastModified + ", physical size " + PhysicalSize;
         }
 
-        /// <summary> Converts archive type to string representation. </summary>
-        /// <param name="type">Archive type.</param>
-        /// <returns>String representation of the given archive type.</returns>
-        public static string TypeToString(ArchiveType type) {
-            Contract.Ensures(Contract.Result<string>() != null);
-
-            return TypesToNames.GetValue(type)?.ToLowerInvariant() ?? string.Empty;
-        }
-
-        /// <summary> Converts archive type string representation to the archive type. </summary>
-        /// <param name="typeName">Archive type string representation.</param>
-        /// <returns>Archive type corresponding to the given string.</returns>
-        public static ArchiveType StringToType([CanBeNull] string typeName) {
-            return !string.IsNullOrEmpty(typeName)
-                ? NamesToTypes.GetValue(typeName.ToLowerInvariant())
-                : ArchiveType.Unknown;
+        [ContractInvariantMethod]
+        private void ObjectInvariant() {
+            Contract.Invariant(!string.IsNullOrWhiteSpace(Name));
+            Contract.Invariant(PhysicalSize >= 0);
         }
 
         private static readonly Dictionary<ArchiveType, string> TypesToNames = new Dictionary<ArchiveType, string> {
@@ -117,5 +111,9 @@ namespace ArchiveCompare {
         private static readonly Dictionary<string, ArchiveType> NamesToTypes = TypesToNames
             .ToDictionary(key => key.Value, value => value.Key);
 
+
+        private static readonly List<Type> Comparisons = new List<Type> {
+            typeof(FileNameDifference), typeof(FileCountDifference), typeof(FolderCountDifference)
+        };
     }
 }

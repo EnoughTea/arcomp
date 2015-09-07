@@ -14,8 +14,9 @@ namespace ArchiveCompare {
         /// <param name="parent">Parent directory. Null means entry is located at archive's root.</param>
         protected Entry(string name, DateTime? lastModified = null, long size = 0, long packedSize = 0,
             FolderEntry parent = null) {
-            Contract.Requires(!string.IsNullOrEmpty(name));
+            Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Contract.Requires(size >= 0);
+            Contract.Requires(packedSize >= 0);
 
             Name = name;
             ParentFolder = parent;
@@ -50,6 +51,13 @@ namespace ArchiveCompare {
         public override string ToString() {
             string lastModified = (LastModified != null) ? ", modified on " + LastModified : string.Empty;
             return Name + lastModified;
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant() {
+            Contract.Invariant(string.IsNullOrWhiteSpace(Name));
+            Contract.Invariant(Size >= 0);
+            Contract.Invariant(PackedSize >= 0);
         }
     }
 }

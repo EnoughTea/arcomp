@@ -12,12 +12,12 @@ namespace ArchiveCompare {
         /// </summary>
         /// <param name="name">Archive name.</param>
         /// <param name="nested">Nested single archive.</param>
-        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
         /// <param name="physicalSize">Size of the archive part as reported by file system.</param>
         /// <param name="totalPhysicalSize">Total size of all parts as reported by file system.</param>
-        public SplitArchive(string name, SingleArchive nested, DateTime? lastModified = null, long physicalSize = 0,
-            long totalPhysicalSize = 0)
-            : base(name, ArchiveType.Split, lastModified, physicalSize) {
+        /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
+        public SplitArchive(string name, SingleArchive nested, long physicalSize = 0,
+            long totalPhysicalSize = 0, DateTime? lastModified = null)
+            : base(name, ArchiveType.Split, physicalSize, lastModified) {
             Contract.Requires(nested != null);
             Contract.Requires(physicalSize >= 0);
             Contract.Requires(totalPhysicalSize >= 0);
@@ -37,6 +37,12 @@ namespace ArchiveCompare {
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
             return base.ToString() + ", total physical size " + TotalPhysicalSize + " [" + Nested + "]";
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant() {
+            Contract.Invariant(Nested != null);
+            Contract.Invariant(TotalPhysicalSize >= 0);
         }
     }
 }

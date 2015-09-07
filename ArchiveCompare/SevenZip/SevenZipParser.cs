@@ -77,12 +77,12 @@ namespace ArchiveCompare {
             if (sorted.IsSplitArchive) {
                 Debug.Assert(sorted.NestedProperties != null);
                 var nestedArchive = new SingleArchive(sorted.NestedProperties.Name, sorted.NestedProperties.Type,
-                    entries, null, sorted.NestedProperties.PhysicalSize, sorted.NestedProperties.Size);
-                result = new SplitArchive(sorted.Properties.Name, nestedArchive, null,
-                    sorted.Properties.PhysicalSize, sorted.Properties.TotalPhysicalSize);
+                    entries, sorted.NestedProperties.PhysicalSize, sorted.NestedProperties.Size);
+                result = new SplitArchive(sorted.Properties.Name, nestedArchive, sorted.Properties.PhysicalSize,
+                    sorted.Properties.TotalPhysicalSize);
             } else {
                 result = new SingleArchive(sorted.Properties.Name, sorted.Properties.Type, entries,
-                    null, sorted.Properties.PhysicalSize, sorted.Properties.Size);
+                    sorted.Properties.PhysicalSize, sorted.Properties.Size);
             }
 
             return result;

@@ -124,8 +124,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Archive.cs" />
+    <Compile Include="ArchiveType.cs" />
+    <Compile Include="Differences\FileCountDifference.cs" />
+    <Compile Include="Differences\FileNameDifference.cs" />
+    <Compile Include="Differences\FolderCountDifference.cs" />
+    <Compile Include="Differences\LastModifiedDifference.cs" />
+    <Compile Include="Differences\PackedSizeDifference.cs" />
+    <Compile Include="Differences\SizeDifference.cs" />
     <Compile Include="Entry.cs" />
-    <Compile Include="ArchiveDifference.cs" />
+    <Compile Include="Differences\ArchiveTraitDifference.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="FileEntry.cs" />
     <Compile Include="FolderEntry.cs" />

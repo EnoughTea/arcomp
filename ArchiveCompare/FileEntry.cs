@@ -15,6 +15,7 @@ namespace ArchiveCompare {
         public FileEntry(string name, DateTime? lastModified = null, long size = 0, long packedSize = 0, int crc = -1,
             FolderEntry parent = null)
             : base(name, lastModified,  size, packedSize, parent) {
+            Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Contract.Requires(size >= 0);
             Contract.Requires(packedSize >= 0);
 

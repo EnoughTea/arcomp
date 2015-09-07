@@ -16,6 +16,7 @@ namespace ArchiveCompare {
         public FolderEntry(string name, DateTime? lastModified = null, long size = 0, long packedSize = 0,
             FolderEntry parent = null)
             : base(name, lastModified, size, packedSize, parent) {
+            Contract.Requires(!string.IsNullOrWhiteSpace(name));
             Contract.Requires(size >= 0);
             Contract.Requires(packedSize >= 0);
 
@@ -61,6 +62,11 @@ namespace ArchiveCompare {
             Contract.Requires(entry != null);
 
             _contents.Add(entry);
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant() {
+            Contract.Invariant(Contents != null);
         }
     }
 }
