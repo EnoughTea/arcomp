@@ -1,5 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 using JetBrains.Annotations;
+using System.Diagnostics.Contracts;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by some trait. </summary>
@@ -16,6 +19,16 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
         public abstract bool DifferenceExists { get; }
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            string traitName = TypeNameToString(GetType(), "Entry", "Difference");
+            string noDifferencePart = !DifferenceExists ? "no " : string.Empty;
+            return ComparisonExists
+                ? $"{noDifferencePart}{traitName}"
+                : $"undefined entry comparison by {traitName}.";
+        }
 
         /// <summary> Initializes comparison from any two entries. </summary>
         /// <param name="left">Left entry.</param>
@@ -97,5 +110,22 @@ namespace ArchiveCompare {
 
             return comparedSuccesfully;
         }
+
+        internal static string TypeNameToString(Type type, string prefix, string suffix) {
+            Contract.Requires(type != null);
+            Contract.Requires(prefix != null);
+            Contract.Requires(suffix != null);
+
+            string typeName = type.Name;
+            int targetLength = typeName.Length - prefix.Length - suffix.Length;
+            Debug.Assert(typeName.Length >= targetLength + prefix.Length);
+            string traitName = typeName.Substring(prefix.Length, targetLength);
+            traitName = TypeNameSplit.Replace(traitName, " ").ToLowerInvariant();
+            return traitName;
+        }
+
+        private static readonly Regex TypeNameSplit = new Regex(@"(?<=[A-Z])(?=[A-Z][a-z]) |
+            (?<=[^A-Z])(?=[A-Z]) |
+            (?<=[A-Za-z])(?=[^A-Za-z])", RegexOptions.IgnorePatternWhitespace);
     }
 }

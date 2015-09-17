@@ -146,7 +146,9 @@
     <Compile Include="Entry differences\EntryTypeDifference.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="Archive differences\ArchiveTraitDifference.cs" />
+    <Compile Include="EntryModificationState.cs" />
     <Compile Include="EntryType.cs" />
+    <Compile Include="EntryVersionsComparison.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\GlobalExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />

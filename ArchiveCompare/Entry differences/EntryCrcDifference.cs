@@ -1,3 +1,4 @@
+﻿using System.Globalization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
@@ -18,6 +19,18 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
         public override bool DifferenceExists => LeftCrc != RightCrc;
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            string leftCrc = (LeftCrc != FileEntry.NoCrc)
+                ? LeftCrc.ToString("X8", CultureInfo.InvariantCulture)
+                : "n/a";
+            string rightCrc = (RightCrc != FileEntry.NoCrc)
+                ? RightCrc.ToString("X8", CultureInfo.InvariantCulture)
+                : "n/a";
+            return base.ToString() + $" ({leftCrc} v {rightCrc})";
+        }
 
         /// <summary> Initializes comparison from two files. </summary>
         /// <param name="left">Left file.</param>

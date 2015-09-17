@@ -51,7 +51,7 @@ namespace ArchiveCompare {
 
         /// <summary> Gathers all entries which belong to this directory, top-level and recursively down. </summary>
         [NotNull]
-        public IEnumerable<Entry> FlattenContents() {
+        public IEnumerable<Entry> FlattenedContents() {
             Contract.Ensures(Contract.Result<IEnumerable<Entry>>() != null);
 
             foreach (var child in Contents) {
@@ -59,7 +59,7 @@ namespace ArchiveCompare {
                 var childFolder = (child as FolderEntry);
                 if (childFolder == null) continue;
 
-                foreach (var subChild in childFolder.FlattenContents()) {
+                foreach (var subChild in childFolder.FlattenedContents()) {
                     yield return subChild;
                 }
             }

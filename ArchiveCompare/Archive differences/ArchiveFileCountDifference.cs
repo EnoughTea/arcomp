@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archive difference by file count. </summary>
@@ -18,6 +18,12 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public override bool DifferenceExists => LeftFileCount != RightFileCount;
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftFileCount} v {RightFileCount})";
+        }
 
         /// <summary> Initializes comparison from two single archives. </summary>
         /// <param name="left">Left archive.</param>

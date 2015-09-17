@@ -19,6 +19,12 @@ namespace ArchiveCompare {
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public override bool DifferenceExists => LeftTotalPhysicalSize != RightTotalPhysicalSize;
 
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftTotalPhysicalSize} v {RightTotalPhysicalSize})";
+        }
+
         /// <summary> Initializes comparison from single and split archives. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>

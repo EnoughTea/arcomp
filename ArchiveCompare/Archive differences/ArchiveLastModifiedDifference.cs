@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
@@ -19,6 +19,12 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public override bool DifferenceExists => LeftLastModified != RightLastModified;
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftLastModified} v {RightLastModified})";
+        }
 
         /// <summary> Initializes comparison from any two archives. </summary>
         /// <param name="left">Left archive.</param>

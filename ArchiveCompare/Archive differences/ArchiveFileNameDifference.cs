@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
@@ -7,9 +7,15 @@ namespace ArchiveCompare {
         /// <summary> Initializes a new instance of the <see cref="ArchiveFileNameDifference" /> class. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>
-        /// <param name="caseSensitive">if set to <c>true</c>, filename comparison will be case sensitive.</param>
-        public ArchiveFileNameDifference([CanBeNull] Archive left, [CanBeNull] Archive right,
-            bool caseSensitive = false)
+        public ArchiveFileNameDifference([CanBeNull] Archive left, [CanBeNull] Archive right)
+            : this(left, right, false) {
+        }
+
+        /// <summary> Initializes a new instance of the <see cref="ArchiveFileNameDifference" /> class. </summary>
+        /// <param name="left">Left archive.</param>
+        /// <param name="right">Right archive.</param>
+        /// <param name="caseSensitive">if set to <c>true</c>, file name comparison will be case sensitive.</param>
+        public ArchiveFileNameDifference([CanBeNull] Archive left, [CanBeNull] Archive right, bool caseSensitive)
             : base(left, right) {
             CaseSensitive = caseSensitive;
         }
@@ -26,6 +32,12 @@ namespace ArchiveCompare {
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public override bool DifferenceExists => !string.Equals(LeftFileName, RightFileName,
             CaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase);
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftFileName} v {RightFileName})";
+        }
 
         /// <summary> Initializes comparison from any two archives. </summary>
         /// <param name="left">Left archive.</param>

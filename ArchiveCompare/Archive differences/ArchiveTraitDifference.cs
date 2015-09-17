@@ -17,6 +17,16 @@ namespace ArchiveCompare {
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public abstract bool DifferenceExists { get; }
 
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            string traitName = EntryTraitDifference.TypeNameToString(GetType(), "Archive", "Difference");
+            string noDifferencePart = !DifferenceExists ? "no " : string.Empty;
+            return ComparisonExists
+                ? $"{noDifferencePart}{traitName}"
+                : $"undefined archive comparison by {traitName}";
+        }
+
         /// <summary> Initializes comparison from any two archives. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>

@@ -26,15 +26,19 @@ namespace Arcomp {
             }
         }
 
-        private static void ShowArchiveMetadata(IList<string> show) {
-            var archiveFiles = PathTools.GatherFiles(show).ToArray();
+        private static Archive[] CreateArchivesFromFiles(FileInfo[] archiveFiles) {
             StringBuilder totalOutput = new StringBuilder();
             foreach (var archiveFile in archiveFiles) {
                 var fileOutput = ExecuteSevenZipProcess("l -slt " + archiveFile);
                 totalOutput.Append(fileOutput);
             }
 
-            var archives = SevenZip.ArchivesFromOutput(totalOutput.ToString()).ToArray();
+            return SevenZip.ArchivesFromOutput(totalOutput.ToString()).ToArray();
+        }
+
+        private static void ShowArchiveMetadata(IList<string> show) {
+            var archiveFiles = PathTools.GatherFiles(show).ToArray();
+            var archives = CreateArchivesFromFiles(archiveFiles);
             foreach (var archive in archives) {
                 ConsoleTools.Info(archive.ToString());
                 ConsoleTools.WriteLine();
@@ -42,7 +46,35 @@ namespace Arcomp {
         }
 
         private static void CompareArchives(IList<string> compare) {
-            throw new NotImplementedException();
+            var archiveFiles = PathTools.GatherFiles(compare).ToArray();
+            var archives = CreateArchivesFromFiles(archiveFiles);
+            if (archives.Length == 2) {
+                var left = archives[0];
+                var right = archives[1];
+                var propertiesDiff = Archive.PropertiesDiff(left, right);
+                var entriesDiff = Archive.EntriesDiff(left, right)
+                    .OrderBy(cmp => cmp.EntryType)
+                    .ThenBy(cmp => cmp.LeftVersion?.Path ?? (cmp.RightVersion?.Path ?? string.Empty));
+
+                ConsoleTools.Info("Properties diff");
+                ConsoleTools.WriteLine("===============");
+                ConsoleTools.WriteLine();
+                foreach (var propertyDiff in propertiesDiff) {
+                    ConsoleTools.WriteLine(propertyDiff.ToString());
+                }
+                ConsoleTools.WriteLine();
+                ConsoleTools.WriteLine();
+                ConsoleTools.Info("Entries diff");
+                ConsoleTools.Info("============");
+                ConsoleTools.WriteLine();
+                foreach (var entryDiff in entriesDiff) {
+                    ConsoleTools.WriteLine(entryDiff.ToString());
+                    ConsoleTools.WriteLine();
+                }
+
+            } else {
+                ConsoleTools.Error($"Expected 2 archives to be compared, got {archiveFiles.Length}.");
+            }
         }
 
         /// <summary> Executes the 7-Zip with given command line arguments, returns its stdout as a string. </summary>

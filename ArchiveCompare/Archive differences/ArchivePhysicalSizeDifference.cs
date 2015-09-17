@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archive difference by physical size. </summary>
@@ -18,6 +18,12 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public override bool DifferenceExists => LeftPhysicalSize != RightPhysicalSize;
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftPhysicalSize} v {RightPhysicalSize})";
+        }
 
         /// <summary> Initializes comparison from any two archives. </summary>
         /// <param name="left">Left archive.</param>

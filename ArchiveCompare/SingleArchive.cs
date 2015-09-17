@@ -53,7 +53,7 @@ namespace ArchiveCompare {
         /// <summary> Converts hierarchical contents into flat sequence. </summary>
         /// <returns> Flattened contents. </returns>
         [NotNull]
-        public IEnumerable<Entry> FlattenContents() {
+        public IEnumerable<Entry> FlattenedContents() {
             Contract.Ensures(Contract.Result<IEnumerable<Entry>>() != null);
 
             foreach (var child in Contents) {
@@ -61,7 +61,7 @@ namespace ArchiveCompare {
                 var childFolder = (child as FolderEntry);
                 if (childFolder == null) continue;
 
-                foreach (var subChild in childFolder.FlattenContents()) {
+                foreach (var subChild in childFolder.FlattenedContents()) {
                     yield return subChild;
                 }
             }

@@ -9,9 +9,10 @@ namespace ArchiveCompare {
     public abstract class Archive {
         #region Static methods
 
-        /// <summary> Finds differences between archives. </summary>
+        /// <summary> Finds property differences between archives. </summary>
         /// <param name="left">'Left' archive.</param>
         /// <param name="right">'Right' archive.</param>
+        /// <returns>Found property differences.</returns>
         public static IEnumerable<ArchiveTraitDifference> PropertiesDiff(Archive left, Archive right) {
             Contract.Requires(left != null);
             Contract.Requires(right != null);
@@ -19,6 +20,34 @@ namespace ArchiveCompare {
             return Comparisons
                 .Select(cmpType => (ArchiveTraitDifference)Activator.CreateInstance(cmpType, left, right))
                 .Where(cmp => cmp != null && cmp.ComparisonExists && cmp.DifferenceExists);
+        }
+        /// <summary> Finds entry differences between archives. </summary>
+        /// <param name="left">'Left' archive.</param>
+        /// <param name="right">'Right' archive.</param>
+        /// <returns>Found entry differences.</returns>
+        public static IEnumerable<EntryVersionsComparison> EntriesDiff(Archive left, Archive right) {
+            Contract.Requires(left != null);
+            Contract.Requires(right != null);
+
+            var actualLeft = (left is SingleArchive) ? (SingleArchive)left : ((SplitArchive)left).Nested;
+            var actualRight = (right is SingleArchive) ? (SingleArchive)right : ((SplitArchive)right).Nested;
+            var leftEntries = actualLeft.FlattenedContents().ToList();
+            var rightEntries = new HashSet<Entry>(actualRight.FlattenedContents());
+
+            for (int i = leftEntries.Count - 1; i >= 0; i--) {
+                var leftEntry = leftEntries[i];
+                leftEntries.RemoveAt(i);
+                var correspondingRight = rightEntries.FirstOrDefault(f => f.IsHomonymousPath(leftEntry));
+                if (correspondingRight != null) {
+                    rightEntries.Remove(correspondingRight);
+                }
+
+                yield return new EntryVersionsComparison(leftEntry, correspondingRight);
+            }
+
+            foreach (var rightEntry in rightEntries) {
+                yield return new EntryVersionsComparison(null, rightEntry);
+            }
         }
 
         /// <summary> Converts archive type to string representation. </summary>

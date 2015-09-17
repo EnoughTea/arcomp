@@ -21,6 +21,12 @@ namespace ArchiveCompare {
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
         public override bool DifferenceExists => LeftType != RightType;
 
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({Archive.TypeToString(LeftType)} v {Archive.TypeToString(RightType)})";
+        }
+
         /// <summary> Initializes comparison from any two archives. </summary>
         /// <param name="left">Left archive.</param>
         /// <param name="right">Right archive.</param>

@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by the parent folder entry. </summary>
@@ -18,6 +18,12 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
         public override bool DifferenceExists => LeftParent != RightParent;
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftParent.Path} v {RightParent.Path})";
+        }
 
         /// <summary> Initializes comparison from any two entries. </summary>
         /// <param name="left">Left entry.</param>

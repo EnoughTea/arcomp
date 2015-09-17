@@ -2,7 +2,7 @@
 using System.Diagnostics.Contracts;
 
 namespace ArchiveCompare {
-    /// <summary> Extension methods for <see cref="List{T}"/> </summary>
+    /// <summary> Extension methods for <see cref="List{T}"/>. </summary>
     internal static class ListExtensions {
         /// <summary> Pops the first item in the list. </summary>
         /// <typeparam name="T">Type of the list element.</typeparam>

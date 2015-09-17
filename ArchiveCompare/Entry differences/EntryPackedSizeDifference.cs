@@ -1,4 +1,4 @@
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by packed size. </summary>
@@ -18,6 +18,12 @@ namespace ArchiveCompare {
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
         public override bool DifferenceExists => LeftPackedSize != RightPackedSize;
+
+        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
+        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        public override string ToString() {
+            return base.ToString() + $" ({LeftPackedSize} v {RightPackedSize})";
+        }
 
         /// <summary> Initializes comparison from any two entries. </summary>
         /// <param name="left">Left entry.</param>

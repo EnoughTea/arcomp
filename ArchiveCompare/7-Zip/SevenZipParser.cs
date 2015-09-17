@@ -56,10 +56,10 @@ namespace ArchiveCompare {
             // 'D' attribute does not exist sometimes, like in PE archives, so try to detect folder entries.
             // For every entry a simple lookup is made to see if some other entry uses it as a directory.
             var detectedDirectories = new HashSet<string>();
-            foreach (var parentDirectory in entries
-                .Select(entry => entry.Name)
+            foreach (var entry in entries
+                .Select(entry => Path.GetDirectoryName(entry.Path))
                 .Where(parentDirectory => !string.IsNullOrEmpty(parentDirectory))) {
-                detectedDirectories.Add(parentDirectory);
+                detectedDirectories.Add(entry);
             }
             // Now check created entries agains detected folders,
             // and fix those created file entries that should be folder entries.

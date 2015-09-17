@@ -30,9 +30,9 @@ namespace ArchiveCompare {
             return first.ParentFolder.IsHomonymousPath(second.ParentFolder);
         }
 
-        /// <summary> Finds differences between archives. </summary>
-        /// <param name="left">'Left' archive.</param>
-        /// <param name="right">'Right' archive.</param>
+        /// <summary> Finds proeprty differences between entries. </summary>
+        /// <param name="left">'Left' entry.</param>
+        /// <param name="right">'Right' entry.</param>
         public static IEnumerable<EntryTraitDifference> PropertiesDiff(Entry left, Entry right) {
             Contract.Requires(left != null);
             Contract.Requires(right != null);
@@ -40,6 +40,31 @@ namespace ArchiveCompare {
             return Comparisons
                 .Select(cmpType => (EntryTraitDifference)Activator.CreateInstance(cmpType, left, right))
                 .Where(cmp => cmp != null && cmp.ComparisonExists && cmp.DifferenceExists);
+        }
+
+        /// <summary> Return type of the specified entry. </summary>
+        /// <param name="entry">Target entry.</param>
+        /// <returns>Type of the specified entry.</returns>
+        public static EntryType Type([CanBeNull] Entry entry) {
+            return (entry == null) ? EntryType.Unknown : ((entry is FileEntry) ? EntryType.File : EntryType.Folder);
+        }
+
+        /// <summary> Converts entry type to string representation. </summary>
+        /// <param name="type">Entry type.</param>
+        /// <returns>String representation of the given entry type.</returns>
+        public static string TypeToString(EntryType type) {
+            Contract.Ensures(Contract.Result<string>() != null);
+
+            return TypesToNames.GetValue(type)?.ToLowerInvariant() ?? string.Empty;
+        }
+
+        /// <summary> Converts entry type string representation to the entry type. </summary>
+        /// <param name="typeName">Entry type string representation.</param>
+        /// <returns>Entry type corresponding to the given string.</returns>
+        public static EntryType StringToType([CanBeNull] string typeName) {
+            return !string.IsNullOrEmpty(typeName)
+                ? NamesToTypes.GetValue(typeName.ToLowerInvariant())
+                : EntryType.Unknown;
         }
 
         #endregion
@@ -136,6 +161,15 @@ namespace ArchiveCompare {
         internal static string NormalizePath([CanBeNull] string path) {
             return path?.Trim().Replace('/', PathSeparator[0]).TrimEnd(PathSeparator);
         }
+
+        private static readonly Dictionary<EntryType, string> TypesToNames = new Dictionary<EntryType, string> {
+            { EntryType.File, "file" },
+            { EntryType.Folder, "folder" },
+            { EntryType.Unknown, "unknown" }
+        };
+
+        private static readonly Dictionary<string, EntryType> NamesToTypes = TypesToNames
+            .ToDictionary(key => key.Value, value => value.Key);
 
         private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
             typeof(EntryTypeDifference), typeof(EntryFileNameDifference), typeof(EntryParentFolderDifference),
