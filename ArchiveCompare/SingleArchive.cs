@@ -67,6 +67,41 @@ namespace ArchiveCompare {
             }
         }
 
+        /// <summary> Gets entry represented by the given path. Case does not matter. </summary>
+        /// <remarks> For example, take archive containing file entry 'a.txt' in folder 'f',
+        /// which is in turn contained in other folder 'rf', which is a root folder.
+        /// So path 'rf\f\a.txt' represents 'a.txt' entry, and path 'rf\f' represents 'f' folder entry.
+        /// </remarks>
+        /// <param name="path">Entry path.</param>
+        /// <returns>Found entry or null.</returns>
+        [CanBeNull]
+        public Entry FindEntry(string path) {
+            Contract.Requires(path != null);
+
+            path = Entry.NormalizePath(path);
+            var hierarchyLevels = path.Split(Entry.PathSeparator, StringSplitOptions.RemoveEmptyEntries);
+            Entry closestFind = null;
+            foreach (var hierarchyLevel in hierarchyLevels) {
+                if (closestFind == null) {  // We are at root level, so search archive root:
+                    closestFind = Contents.FirstOrDefault(entry => entry.IsHomonymousName(hierarchyLevel));
+                    continue;
+                }
+                // We are past root level, so check current folder or file
+                // for homonymousity with current hierarchy level:
+                var folder = closestFind as FolderEntry;
+                if (folder != null) {
+                    closestFind = folder.Contents.FirstOrDefault(entry => entry.IsHomonymousName(hierarchyLevel));
+                } else {
+                    var file = closestFind as FileEntry;
+                    if (file != null) {
+                        closestFind = file.IsHomonymousName(hierarchyLevel) ? file : null;
+                    }
+                }
+            }
+
+            return (closestFind != null && closestFind.IsHomonymousPath(path)) ? closestFind : null;
+        }
+
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
@@ -95,14 +130,17 @@ namespace ArchiveCompare {
             // Find all folders in the archive entries:
             var directories = (from entry in entriesFixed
                 where entry is FolderEntry
-                select entry as FolderEntry).ToDictionary(directory => directory.Name);
+                select entry as FolderEntry).ToDictionary(directory => directory.Path);
+
             FolderCount = directories.Count;
             // Pass every archive entry and link it to its parent entry.
             long calculatedContentSize = 0;
             long calculatedPackedSize = 0;
             DateTime maxLastModified = DateTime.MinValue;
             foreach (var entry in entriesFixed) {
-                if (entry is FileEntry) { FileCount++; }
+                if (entry is FileEntry) {
+                    FileCount++;
+                }
 
                 // Archive's unpacked and packed sizes are the sum of corresponding entry sizes.
                 calculatedContentSize += entry.Size;
@@ -113,7 +151,8 @@ namespace ArchiveCompare {
                 }
 
                 // Look for parent entry to link with:
-                var parent = directories.GetValue(Path.GetDirectoryName(entry.Name));
+                string parentName = Path.GetDirectoryName(entry.Path);
+                var parent = directories.GetValue(parentName);
                 if (parent != null) {
                     parent.Add(entry);
                     entry.ParentFolder = parent;

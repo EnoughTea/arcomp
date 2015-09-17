@@ -125,8 +125,11 @@
   <ItemGroup>
     <Compile Include="Archive differences\ArchivePhysicalSizeDifference.cs" />
     <Compile Include="Archive differences\ArchiveTotalPhysicalSizeDifference.cs" />
+    <Compile Include="Archive differences\ArchiveTypeDifference.cs" />
     <Compile Include="Entry differences\EntryCrcDifference.cs" />
+    <Compile Include="Entry differences\EntryFileCountDifference.cs" />
     <Compile Include="Entry differences\EntryFileNameDifference.cs" />
+    <Compile Include="Entry differences\EntryFolderCountDifference.cs" />
     <Compile Include="Entry differences\EntryLastModifiedDifference.cs" />
     <Compile Include="Entry differences\EntryPackedSizeDifference.cs" />
     <Compile Include="Entry differences\EntryParentFolderDifference.cs" />
@@ -140,9 +143,13 @@
     <Compile Include="Archive differences\ArchiveLastModifiedDifference.cs" />
     <Compile Include="Archive differences\ArchivePackedSizeDifference.cs" />
     <Compile Include="Archive differences\ArchiveSizeDifference.cs" />
+    <Compile Include="Entry differences\EntryTypeDifference.cs" />
     <Compile Include="Entry.cs" />
     <Compile Include="Archive differences\ArchiveTraitDifference.cs" />
+    <Compile Include="EntryType.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
+    <Compile Include="Extensions\GlobalExtensions.cs" />
+    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="FileEntry.cs" />
     <Compile Include="FolderEntry.cs" />
     <Compile Include="7-Zip\SevenZip.cs" />

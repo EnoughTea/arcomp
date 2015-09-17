@@ -57,7 +57,7 @@ namespace ArchiveCompare {
             // For every entry a simple lookup is made to see if some other entry uses it as a directory.
             var detectedDirectories = new HashSet<string>();
             foreach (var parentDirectory in entries
-                .Select(entry => Path.GetDirectoryName(entry.Name))
+                .Select(entry => entry.Name)
                 .Where(parentDirectory => !string.IsNullOrEmpty(parentDirectory))) {
                 detectedDirectories.Add(parentDirectory);
             }
@@ -65,8 +65,8 @@ namespace ArchiveCompare {
             // and fix those created file entries that should be folder entries.
             for (int index = 0; index < entries.Length; index++) {
                 var entry = entries[index];
-                if (detectedDirectories.Contains(entry.Name) && !(entry is FolderEntry)) {
-                    entries[index] = new FolderEntry(entry.Name, entry.LastModified, entry.Size, entry.PackedSize,
+                if (detectedDirectories.Contains(entry.Path) && !(entry is FolderEntry)) {
+                    entries[index] = new FolderEntry(entry.Path, entry.LastModified, entry.Size, entry.PackedSize,
                         entry.ParentFolder);
                 }
             }
@@ -121,12 +121,12 @@ namespace ArchiveCompare {
 
             if (simpleLineEntry.StartsWith("Errors:")) { return null; }
 
-            string name = simpleLineEntry.Substring(53).Trim();
+            string path = simpleLineEntry.Substring(53).Trim();
             string attributes = simpleLineEntry.Substring(20, 5).Trim();
             string size = simpleLineEntry.Substring(26, 12).Trim();
             string packedSize = simpleLineEntry.Substring(39, 12).Trim();
             string modified = simpleLineEntry.Substring(0, 19).Trim();
-            return CreateFromProperties(name, modified, attributes, size, packedSize, null);
+            return CreateFromProperties(path, modified, attributes, size, packedSize, null);
         }
 
         [CanBeNull]
@@ -140,10 +140,10 @@ namespace ArchiveCompare {
         }
 
         [CanBeNull]
-        private static Entry CreateFromProperties([CanBeNull] string name, [CanBeNull] string modified,
+        private static Entry CreateFromProperties([CanBeNull] string path, [CanBeNull] string modified,
             [CanBeNull] string attributes, [CanBeNull] string size, [CanBeNull] string packedSize,
             [CanBeNull] string crc) {
-            if (string.IsNullOrWhiteSpace(name)) { return null; }
+            if (string.IsNullOrWhiteSpace(path)) { return null; }
 
             string attributesValue = SevenZipTools.AttributesFromString(attributes);
             DateTime? modifiedValue = SevenZipTools.DateFromString(modified);
@@ -153,8 +153,8 @@ namespace ArchiveCompare {
 
             bool isDirectory = attributesValue.Contains("D");
             return isDirectory
-                ? (Entry)new FolderEntry(name, modifiedValue, sizeValue, packedSizeValue)
-                : new FileEntry(name, modifiedValue, sizeValue, packedSizeValue, crcValue);
+                ? (Entry)new FolderEntry(path, modifiedValue, sizeValue, packedSizeValue)
+                : new FileEntry(path, modifiedValue, sizeValue, packedSizeValue, crcValue);
         }
 
         #endregion Entry parsing

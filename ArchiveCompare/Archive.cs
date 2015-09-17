@@ -12,7 +12,7 @@ namespace ArchiveCompare {
         /// <summary> Finds differences between archives. </summary>
         /// <param name="left">'Left' archive.</param>
         /// <param name="right">'Right' archive.</param>
-        public static IEnumerable<ArchiveTraitDifference> Diff(Archive left, Archive right) {
+        public static IEnumerable<ArchiveTraitDifference> PropertiesDiff(Archive left, Archive right) {
             Contract.Requires(left != null);
             Contract.Requires(right != null);
 
@@ -58,18 +58,18 @@ namespace ArchiveCompare {
 
         private DateTime? _lastModified;
 
-        /// <summary> Gets or sets the archive file path.</summary>
+        /// <summary> Gets the archive file path.</summary>
         [NotNull]
         public string Name { get; }
 
-        /// <summary> Gets or sets the archive type. </summary>
+        /// <summary> Gets the archive type. </summary>
         public ArchiveType Type { get; }
 
-        /// <summary> Gets or sets size of the archive as reported by file system. For split archives means
+        /// <summary> Gets the size of the archive as reported by file system. For split archives means
         ///  user-defined part size (last part could be of any size). </summary>
         public long PhysicalSize { get; }
 
-        /// <summary> Gets or sets the last modified date of the latest modified file in the archive.
+        /// <summary> Gets the last modified date of the latest modified file in the archive.
         ///  Null means latest modified file date in unavailable.</summary>
         public DateTime? LastModified {
             get {
@@ -113,10 +113,10 @@ namespace ArchiveCompare {
 
 
         private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
-            typeof(ArchiveFileNameDifference), typeof(ArchiveFileCountDifference),
+            typeof(ArchiveTypeDifference), typeof(ArchiveFileNameDifference), typeof(ArchiveFileCountDifference),
             typeof(ArchiveFolderCountDifference), typeof(ArchiveLastModifiedDifference),
-            typeof(ArchivePackedSizeDifference), typeof(ArchivePhysicalSizeDifference),
-            typeof(ArchiveSizeDifference), typeof(ArchiveTotalPhysicalSizeDifference)
+            typeof(ArchivePackedSizeDifference), typeof(ArchivePhysicalSizeDifference), typeof(ArchiveSizeDifference),
+            typeof(ArchiveTotalPhysicalSizeDifference)
         };
     }
 }

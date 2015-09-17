@@ -1,22 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archived directory. </summary>
     public class FolderEntry : Entry {
         /// <summary> Initializes a new instance of the <see cref="FileEntry"/> class. </summary>
-        /// <param name="name">Full directory name.</param>
+        /// <param name="path">Full directory name.</param>
         /// <param name="lastModified">The date when folder was last modified.</param>
         /// <param name="size">Uncompressed size. 0 means uncompressed size is unavailable.</param>
         /// <param name="packedSize">Compressed size. 0 means that either compressed size is unavailable or
         ///     no compression was done on the entry.</param>
         /// <param name="parent">Parent directory. Null means entry is located at archive's root.</param>
-        public FolderEntry(string name, DateTime? lastModified = null, long size = 0, long packedSize = 0,
+        public FolderEntry(string path, DateTime? lastModified = null, long size = 0, long packedSize = 0,
             FolderEntry parent = null)
-            : base(name, lastModified, size, packedSize, parent) {
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+            : base(path, lastModified, size, packedSize, parent) {
+            Contract.Requires(!string.IsNullOrWhiteSpace(path));
             Contract.Requires(size >= 0);
             Contract.Requires(packedSize >= 0);
 
@@ -25,11 +26,20 @@ namespace ArchiveCompare {
 
         private readonly HashSet<Entry> _contents;
 
+        /// <summary> Gets name of this folder. </summary>
+        public override string Name => Path.Split(PathSeparator, StringSplitOptions.RemoveEmptyEntries).Last();
+
         /// <summary> Gets entries which belong to this directory, top-level only. </summary>
         [NotNull]
         public IEnumerable<Entry> Contents => _contents;
 
-        /// <summary> Gets the amount of entries in top level of this folder. </summary>
+        /// <summary> Gets the amount of files in top level of this folder. </summary>
+        public int FileCount => _contents.Count(entry => entry is FileEntry);
+
+        /// <summary> Gets the amount of folders in top level of this folder. </summary>
+        public int FolderCount => _contents.Count(entry => entry is FolderEntry);
+
+        /// <summary> Gets the amount of files and folders in top level of this folder. </summary>
         public int ContentsCount => _contents.Count;
 
         /// <summary> Determines whether this entry has the specified entry as top-level child. </summary>

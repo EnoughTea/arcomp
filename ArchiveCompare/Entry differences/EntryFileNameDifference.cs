@@ -31,8 +31,8 @@ namespace ArchiveCompare {
         /// <param name="right">Right entry.</param>
         /// <returns>true if comparison of two entries by this trait can be performed; false otherwise.</returns>
         protected override bool InitFromEntries(Entry left, Entry right) {
-            LeftFileName = left.Name;
-            RightFileName = right.Name;
+            LeftFileName = left.Path;
+            RightFileName = right.Path;
             return true;
         }
     }
