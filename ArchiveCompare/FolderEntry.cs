@@ -9,21 +9,22 @@ namespace ArchiveCompare {
     /// <summary> Represents an archived directory. </summary>
     [DataContract(Name = "folder", IsReference = true, Namespace = "")]
     public class FolderEntry : Entry {
-        /// <summary> Initializes a new instance of the <see cref="FileEntry"/> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="FileEntry" /> class. </summary>
         /// <param name="path">Full directory name.</param>
         /// <param name="lastModified">The date when folder was last modified.</param>
         /// <param name="size">Uncompressed size. 0 means uncompressed size is unavailable.</param>
         /// <param name="packedSize">Compressed size. 0 means that either compressed size is unavailable or
-        ///     no compression was done on the entry.</param>
+        /// no compression was done on the entry.</param>
         /// <param name="parent">Parent directory. Null means entry is located at archive's root.</param>
+        /// <param name="contents">Folder contents. Null means folder is empty.</param>
         public FolderEntry(string path, DateTime? lastModified = null, long size = 0, long packedSize = 0,
-            FolderEntry parent = null)
+            FolderEntry parent = null, IEnumerable<Entry> contents = null)
             : base(path, lastModified, size, packedSize, parent) {
             Contract.Requires(!string.IsNullOrWhiteSpace(path));
             Contract.Requires(size >= 0);
             Contract.Requires(packedSize >= 0);
 
-            _contents = new HashSet<Entry>();
+            _contents = new HashSet<Entry>(contents ?? Enumerable.Empty<Entry>());
         }
 
         [DataMember(Name = "contents", IsRequired = true, Order = 10)]

@@ -26,7 +26,10 @@ namespace Arcomp {
             }
         }
 
-        private static Archive[] CreateArchivesFromFiles(FileInfo[] archiveFiles) {
+        // extract entire archive with: 7z x archive.7z -aoa -oC:\outputDir\
+        // extract just a file: 7z x archive.7z "specific path\specific file.txt" -aoa -oC:\outputDir\
+
+        private static Archive[] CreateArchivesFromFiles(IEnumerable<FileInfo> archiveFiles) {
             StringBuilder totalOutput = new StringBuilder();
             foreach (var archiveFile in archiveFiles) {
                 var fileOutput = ExecuteSevenZipProcess("l -slt " + archiveFile);
@@ -79,16 +82,21 @@ namespace Arcomp {
 
         /// <summary> Executes the 7-Zip with given command line arguments, returns its stdout as a string. </summary>
         /// <param name="arguments">Command line arguments passed to 7-Zip.</param>
-        /// <returns>7-Zip stdout after execution.</returns>
-        private static string ExecuteSevenZipProcess(string arguments = "") {
-            const string sevenZipPath = "7z\\";
-            const string sevenZipExe = "7z.exe";
+        /// <param name="pathTo7Z">The path to 7-Zip console executable.</param>
+        /// <returns>
+        /// 7-Zip stdout after execution.
+        /// </returns>
+        private static string ExecuteSevenZipProcess(string arguments = "", string pathTo7Z = null) {
+            if (string.IsNullOrWhiteSpace(pathTo7Z)) {
+                pathTo7Z = "7z" + Path.DirectorySeparatorChar + "7z.exe";
+            }
+
             var startInfo = new ProcessStartInfo {
                 CreateNoWindow = true,
                 UseShellExecute = false,
                 RedirectStandardOutput = true,
                 RedirectStandardInput = true,   // 7z can ask for password.
-                FileName = Path.Combine(sevenZipPath, sevenZipExe),
+                FileName = pathTo7Z,
                 Arguments = arguments
             };
             // Yeah, obviously password-protected archives are not supported.
