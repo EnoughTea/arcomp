@@ -1,7 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by folder count. </summary>
+    [DataContract(Name = "eFoldersDiff", IsReference = true, Namespace = "")]
     public class EntryFolderCountDifference : EntryTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="EntryFolderCountDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
@@ -11,9 +13,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left folder count. </summary>
+        [DataMember(Name = "lFolders", Order = 0)]
         public int LeftFolderCount { get; private set; }
 
         /// <summary> Gets the right folder count. </summary>
+        [DataMember(Name = "rFolders", Order = 1)]
         public int RightFolderCount { get; private set; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>

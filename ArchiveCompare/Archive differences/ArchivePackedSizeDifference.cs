@@ -1,7 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archive difference by packed size. </summary>
+    [DataContract(Name = "archivePackedSizeDiff", IsReference = true, Namespace = "")]
     public class ArchivePackedSizeDifference : ArchiveTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="ArchivePackedSizeDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
@@ -11,9 +13,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left packed size. </summary>
+        [DataMember(Name = "lPackedSize", Order = 0)]
         public long LeftPackedSize { get; private set; }
 
         /// <summary> Gets the right packed size. </summary>
+        [DataMember(Name = "rPackedSize", Order = 1)]
         public long RightPackedSize { get; private set; }
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>

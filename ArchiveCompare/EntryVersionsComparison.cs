@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents differences between 'left' and 'right' versions of the same entry. </summary>
+    [DataContract(Name = "entryCmp", IsReference = true, Namespace = "")]
     public class EntryVersionsComparison {
         /// <summary> Initializes a new instance of the <see cref="EntryVersionsComparison"/> class. </summary>
         /// <param name="leftVersion">The left version.</param>
@@ -32,22 +35,27 @@ namespace ArchiveCompare {
             Differences = differences;
         }
 
-        /// <summary> Gets the 'left' version of the entry. </summary>
-        public Entry LeftVersion { get; }
-
-        /// <summary> Gets the 'right' version of the entry. </summary>
-        public Entry RightVersion { get; }
-
         /// <summary> Gets the entry type. </summary>
+        [DataMember(Name = "type", Order = 0)]
         public EntryType EntryType { get; }
-
-        /// <summary> Gets the differences in properties beetween two entries. </summary>
-        public IEnumerable<EntryTraitDifference> Differences { get; }
 
         /// <summary>
         ///  Gets the value indicating what type of modification entry suffered between versions.
         /// </summary>
+        [DataMember(Name = "state", Order = 1)]
         public EntryModificationState State { get; }
+
+        /// <summary> Gets the 'left' version of the entry. </summary>
+        [CanBeNull, DataMember(Name = "left", Order = 2)]
+        public Entry LeftVersion { get; }
+
+        /// <summary> Gets the 'right' version of the entry. </summary>
+        [CanBeNull, DataMember(Name = "left", Order = 3)]
+        public Entry RightVersion { get; }
+
+        /// <summary> Gets the differences in properties beetween two entries. </summary>
+        [NotNull, DataMember(Name = "diff", Order = 10)]
+        public IEnumerable<EntryTraitDifference> Differences { get; }
 
         /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
         /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
@@ -66,6 +74,11 @@ namespace ArchiveCompare {
             string modifications = Differences.Aggregate(":", (acc, diff) => acc + Environment.NewLine +
                 diff.ToString());
             return $"{header}{modifications}";
+        }
+
+        [ContractInvariantMethod]
+        private void ObjectInvariant() {
+            Contract.Invariant(Differences != null);
         }
     }
 }

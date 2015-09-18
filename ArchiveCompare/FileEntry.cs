@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archived file. </summary>
+    [DataContract(Name = "file", IsReference = true, Namespace = "")]
     public class FileEntry : Entry {
         /// <summary> Initializes a new instance of the <see cref="FileEntry" /> class. </summary>
         /// <param name="path">Full file name.</param>
@@ -26,6 +28,7 @@ namespace ArchiveCompare {
         public override string Name => System.IO.Path.GetFileName(Path);
 
         /// <summary> File checksum, values less than zero means CRC in unavailable. </summary>
+        [DataMember(Name = "crc", IsRequired = false)]
         public int Crc { get; }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>

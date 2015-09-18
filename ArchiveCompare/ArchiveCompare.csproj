@@ -138,7 +138,7 @@
     <Compile Include="Archive.cs" />
     <Compile Include="ArchiveType.cs" />
     <Compile Include="Archive differences\ArchiveFileCountDifference.cs" />
-    <Compile Include="Archive differences\ArchiveFileNameDifference.cs" />
+    <Compile Include="Archive differences\ArchiveNameDifference.cs" />
     <Compile Include="Archive differences\ArchiveFolderCountDifference.cs" />
     <Compile Include="Archive differences\ArchiveLastModifiedDifference.cs" />
     <Compile Include="Archive differences\ArchivePackedSizeDifference.cs" />

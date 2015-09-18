@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents single archive entry. </summary>
+    [DataContract(Name = "entry", IsReference = true, Namespace = "")]
     public abstract class Entry {
         /// <summary> Character separating hierarchy levels in entry path. </summary>
         public static readonly char[] PathSeparator = { '\\' };
@@ -90,7 +92,7 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the archive entry full name, with its parent folders up to root.</summary>
-        [NotNull]
+        [NotNull, DataMember(Name = "path", IsRequired = true, Order = 0)]
         public string Path { get; }
 
         /// <summary> Gets the name of this entry. </summary>
@@ -98,19 +100,23 @@ namespace ArchiveCompare {
 
         /// <summary> Gets or sets the date when file was last modified.
         ///  Null means modified date in unavailable.</summary>
+        [DataMember(Name = "modified", IsRequired = false, EmitDefaultValue = false, Order = 1)]
         public DateTime? LastModified { get; }
 
         /// <summary> Gets or sets the uncompressed size. 0 means that entry is a folder or
         ///  uncompressed size is unavailable. </summary>
+        [DataMember(Name = "size", IsRequired = false, Order = 2)]
         public long Size { get; }
 
         /// <summary> Gets or sets the compressed size.
         /// 0 means that either entry is a folder, or no compression was done on the entry,
         /// or compressed size is unavailable.
         /// </summary>
+        [DataMember(Name = "packedSize", IsRequired = false, Order = 3)]
         public long PackedSize { get; }
 
         /// <summary> Gets or sets the parent directory. Null means root. </summary>
+        [DataMember(Name = "parent", IsRequired = false, EmitDefaultValue = false, Order = 10)]
         public FolderEntry ParentFolder { get; internal set; }
 
         /// <summary> Determines whether this entry has the same name as the specified entry. Ignores case. </summary>

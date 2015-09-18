@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Archive split over several files. </summary>
+    [DataContract(Name = "splitArchive", IsReference = true, Namespace = "")]
     public class SplitArchive : Archive {
+        [DataMember(Name = "totalPhysSize", IsRequired = false, Order = 0)]
         private readonly long _totalPhysicalSize;
 
         /// <summary>
@@ -27,7 +30,7 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the nested archive. </summary>
-        [NotNull]
+        [NotNull, DataMember(Name = "nestedArchive", IsRequired = true, Order = 10)]
         public SingleArchive Nested { get; }
 
         /// <summary> Gets total size of the archive as reported by file system. </summary>

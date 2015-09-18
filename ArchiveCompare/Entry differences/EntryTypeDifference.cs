@@ -1,7 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by type. </summary>
+    [DataContract(Name = "eTypeDiff", IsReference = true, Namespace = "")]
     public class EntryTypeDifference : EntryTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="EntryTypeDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
@@ -11,9 +13,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left entry type. </summary>
+        [DataMember(Name = "lType", Order = 0)]
         public EntryType LeftEntryType { get; private set; }
 
         /// <summary> Gets the right entry type. </summary>
+        [DataMember(Name = "rType", Order = 1)]
         public EntryType RightEntryType { get; private set; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>

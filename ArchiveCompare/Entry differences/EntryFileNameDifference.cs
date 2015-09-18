@@ -1,17 +1,19 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by file name. </summary>
+    [DataContract(Name = "eFileDiff", IsReference = true, Namespace = "")]
     public class EntryFileNameDifference : EntryTraitDifference {
-        /// <summary> Initializes a new instance of the <see cref="ArchiveFileNameDifference" /> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="ArchiveNameDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
         /// <param name="right">Right entry.</param>
         public EntryFileNameDifference([CanBeNull] Entry left, [CanBeNull] Entry right)
             : this(left, right, false) {
         }
 
-        /// <summary> Initializes a new instance of the <see cref="ArchiveFileNameDifference" /> class. </summary>
+        /// <summary> Initializes a new instance of the <see cref="ArchiveNameDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
         /// <param name="right">Right entry.</param>
         /// <param name="caseSensitive">if set to <c>true</c>, file name comparison will be case sensitive.</param>
@@ -20,14 +22,17 @@ namespace ArchiveCompare {
             CaseSensitive = caseSensitive;
         }
 
-        /// <summary> Gets a value indicating whether filename comparison is case sensitive. </summary>
-        public bool CaseSensitive { get; }
-
         /// <summary> Gets the left file name. </summary>
+        [DataMember(Name = "lFile", Order = 0)]
         public string LeftFileName { get; private set; }
 
         /// <summary> Gets the right file name. </summary>
+        [DataMember(Name = "rFile", Order = 1)]
         public string RightFileName { get; private set; }
+
+        /// <summary> Gets a value indicating whether filename comparison is case sensitive. </summary>
+        [DataMember(Name = "cs", Order = 2)]
+        public bool CaseSensitive { get; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
         public override bool DifferenceExists => !string.Equals(LeftFileName, RightFileName,

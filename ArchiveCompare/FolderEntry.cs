@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archived directory. </summary>
+    [DataContract(Name = "folder", IsReference = true, Namespace = "")]
     public class FolderEntry : Entry {
         /// <summary> Initializes a new instance of the <see cref="FileEntry"/> class. </summary>
         /// <param name="path">Full directory name.</param>
@@ -24,6 +26,7 @@ namespace ArchiveCompare {
             _contents = new HashSet<Entry>();
         }
 
+        [DataMember(Name = "contents", IsRequired = true, Order = 10)]
         private readonly HashSet<Entry> _contents;
 
         /// <summary> Gets name of this folder. </summary>

@@ -3,9 +3,11 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 using System.Diagnostics.Contracts;
+using System.Runtime.Serialization;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by some trait. </summary>
+    [DataContract(Name = "entryTraitDiff", IsReference = true, Namespace = "")]
     public abstract class EntryTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="EntryTraitDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
@@ -15,9 +17,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets a value indicating whether it was possible to compare entries by this trait. </summary>
+        [DataMember(Name = "cmpExists", Order = 0)]
         public bool ComparisonExists { get; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
+        [DataMember(Name = "diffExists", Order = 1)]
         public abstract bool DifferenceExists { get; }
 
         /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
@@ -111,6 +115,11 @@ namespace ArchiveCompare {
             return comparedSuccesfully;
         }
 
+        /// <summary> Converts name of the specified type to the human-readable form. </summary>
+        /// <param name="type">Type which name to get.</param>
+        /// <param name="prefix">Type name prefix.</param>
+        /// <param name="suffix">Type name suffix.</param>
+        /// <returns>Human-readable type name.</returns>
         internal static string TypeNameToString(Type type, string prefix, string suffix) {
             Contract.Requires(type != null);
             Contract.Requires(prefix != null);

@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Base class for all archives. </summary>
+    [DataContract(Name = "archive", IsReference = true, Namespace = "")]
     public abstract class Archive {
         #region Static methods
 
@@ -21,10 +23,11 @@ namespace ArchiveCompare {
                 .Select(cmpType => (ArchiveTraitDifference)Activator.CreateInstance(cmpType, left, right))
                 .Where(cmp => cmp != null && cmp.ComparisonExists && cmp.DifferenceExists);
         }
+
         /// <summary> Finds entry differences between archives. </summary>
         /// <param name="left">'Left' archive.</param>
         /// <param name="right">'Right' archive.</param>
-        /// <returns>Found entry differences.</returns>
+        /// <returns> Found entry differences. </returns>
         public static IEnumerable<EntryVersionsComparison> EntriesDiff(Archive left, Archive right) {
             Contract.Requires(left != null);
             Contract.Requires(right != null);
@@ -42,7 +45,10 @@ namespace ArchiveCompare {
                     rightEntries.Remove(correspondingRight);
                 }
 
-                yield return new EntryVersionsComparison(leftEntry, correspondingRight);
+                var cmp = new EntryVersionsComparison(leftEntry, correspondingRight);
+                if (cmp.State != EntryModificationState.Same) {
+                    yield return cmp;
+                }
             }
 
             foreach (var rightEntry in rightEntries) {
@@ -88,18 +94,16 @@ namespace ArchiveCompare {
         private DateTime? _lastModified;
 
         /// <summary> Gets the archive file path.</summary>
-        [NotNull]
+        [NotNull, DataMember(Name = "name", IsRequired = true, Order = 0)]
         public string Name { get; }
 
         /// <summary> Gets the archive type. </summary>
+        [DataMember(Name = "type", Order = 1)]
         public ArchiveType Type { get; }
-
-        /// <summary> Gets the size of the archive as reported by file system. For split archives means
-        ///  user-defined part size (last part could be of any size). </summary>
-        public long PhysicalSize { get; }
 
         /// <summary> Gets the last modified date of the latest modified file in the archive.
         ///  Null means latest modified file date in unavailable.</summary>
+        [DataMember(Name = "modified", IsRequired = false, EmitDefaultValue = false, Order = 2)]
         public DateTime? LastModified {
             get {
                 var split = this as SplitArchive;
@@ -108,6 +112,11 @@ namespace ArchiveCompare {
 
             internal set { _lastModified = value; }
         }
+
+        /// <summary> Gets the size of the archive as reported by file system. For split archives means
+        ///  user-defined part size (last part could be of any size). </summary>
+        [DataMember(Name = "physSize", Order = 3)]
+        public long PhysicalSize { get; }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
@@ -142,7 +151,7 @@ namespace ArchiveCompare {
 
 
         private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
-            typeof(ArchiveTypeDifference), typeof(ArchiveFileNameDifference), typeof(ArchiveFileCountDifference),
+            typeof(ArchiveTypeDifference), typeof(ArchiveNameDifference), typeof(ArchiveFileCountDifference),
             typeof(ArchiveFolderCountDifference), typeof(ArchiveLastModifiedDifference),
             typeof(ArchivePackedSizeDifference), typeof(ArchivePhysicalSizeDifference), typeof(ArchiveSizeDifference),
             typeof(ArchiveTotalPhysicalSizeDifference)

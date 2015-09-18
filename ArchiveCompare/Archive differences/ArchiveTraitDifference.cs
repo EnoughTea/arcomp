@@ -1,8 +1,10 @@
 ﻿using System.Diagnostics;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archive difference by some trait. </summary>
+    [DataContract(Name = "archiveTraitDiff", IsReference = true, Namespace = "")]
     public abstract class ArchiveTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="ArchiveTraitDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
@@ -12,9 +14,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets a value indicating whether it was possible to compare archives by this trait. </summary>
+        [DataMember(Name = "cmpExists", Order = 0)]
         public bool ComparisonExists { get; }
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
+        [DataMember(Name = "diffExists", Order = 1)]
         public abstract bool DifferenceExists { get; }
 
         /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>

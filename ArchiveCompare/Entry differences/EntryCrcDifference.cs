@@ -1,8 +1,10 @@
 ﻿using System.Globalization;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by CRC. </summary>
+    [DataContract(Name = "eCrcDiff", IsReference = true, Namespace = "")]
     public class EntryCrcDifference : EntryTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="EntryCrcDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
@@ -12,9 +14,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left CRC. </summary>
+        [DataMember(Name = "lCrc", Order = 0)]
         public int LeftCrc { get; private set; }
 
         /// <summary> Gets the right CRC. </summary>
+        [DataMember(Name = "rCrc", Order = 1)]
         public int RightCrc { get; private set; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>

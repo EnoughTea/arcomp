@@ -4,10 +4,12 @@ using System.Diagnostics;
 using System.Diagnostics.Contracts;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Archive consisting of single archive file. </summary>
+    [DataContract(Name = "singleArchive", IsReference = true, Namespace = "")]
     public class SingleArchive : Archive {
         /// <summary> Initializes a new instance of the <see cref="Archive" /> class. </summary>
         /// <param name="name">Archive name.</param>
@@ -32,19 +34,24 @@ namespace ArchiveCompare {
             Initialize(entries);
         }
 
+        [DataMember(Name = "contents", IsRequired = true, Order = 10)]
         private readonly List<Entry> _contents;
 
         /// <summary> Gets or sets the uncompressed contents size, 0 if unavailable. </summary>
+        [DataMember(Name = "size", IsRequired = false, Order = 0)]
         public long Size { get; private set; }
 
         /// <summary> Gets or sets the compressed contents size, 0 if unavailable. </summary>
+        [DataMember(Name = "packedSize", IsRequired = false, Order = 1)]
         public long PackedSize { get; private set; }
 
-        /// <summary> Gets or sets the number of folders in the archive. </summary>
-        public long FolderCount { get; private set; }
-
         /// <summary> Gets or sets the number of files in the archive. </summary>
+        [DataMember(Name = "files", IsRequired = true, Order = 2)]
         public long FileCount { get; private set; }
+
+        /// <summary> Gets or sets the number of folders in the archive. </summary>
+        [DataMember(Name = "folders", IsRequired = true, Order = 3)]
+        public long FolderCount { get; private set; }
 
         /// <summary> Gets the archive root entries. </summary>
         [NotNull]

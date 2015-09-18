@@ -1,7 +1,9 @@
-﻿using JetBrains.Annotations;
+﻿using System.Runtime.Serialization;
+using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archive difference by file count. </summary>
+    [DataContract(Name = "archiveFileCountDiff", IsReference = true, Namespace = "")]
     public class ArchiveFileCountDifference : ArchiveTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="ArchiveFileCountDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
@@ -11,9 +13,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left file count. </summary>
+        [DataMember(Name = "lFiles", Order = 0)]
         public long LeftFileCount { get; private set; }
 
         /// <summary> Gets the right file count. </summary>
+        [DataMember(Name = "rFiles", Order = 1)]
         public long RightFileCount { get; private set; }
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>

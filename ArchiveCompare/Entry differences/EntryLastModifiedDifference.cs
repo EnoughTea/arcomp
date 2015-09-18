@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an entry difference by last modified date. </summary>
+    [DataContract(Name = "eModifiedDiff", IsReference = true, Namespace = "")]
     public class EntryLastModifiedDifference : EntryTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="EntryLastModifiedDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
@@ -12,9 +14,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left last modified date. </summary>
+        [DataMember(Name = "lModified", Order = 0)]
         public DateTime? LeftLastModified { get; private set; }
 
         /// <summary> Gets the right last modified date. </summary>
+        [DataMember(Name = "rModified", Order = 1)]
         public DateTime? RightLastModified { get; private set; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>

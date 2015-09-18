@@ -1,9 +1,9 @@
-using System.Collections.Generic;
-using System.Linq;
+using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
     /// <summary> Represents an archive difference by type. </summary>
+    [DataContract(Name = "archiveTypeDiff", IsReference = true, Namespace = "")]
     public class ArchiveTypeDifference : ArchiveTraitDifference {
         /// <summary> Initializes a new instance of the <see cref="ArchiveTypeDifference"/> class. </summary>
         /// <param name="left">Left archive.</param>
@@ -13,9 +13,11 @@ namespace ArchiveCompare {
         }
 
         /// <summary> Gets the left archive type. </summary>
+        [DataMember(Name = "lType", Order = 0)]
         public ArchiveType LeftType { get; private set; }
 
         /// <summary> Gets the right archive type. </summary>
+        [DataMember(Name = "rType", Order = 1)]
         public ArchiveType RightType { get; private set; }
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
