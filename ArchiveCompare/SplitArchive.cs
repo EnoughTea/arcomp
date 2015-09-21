@@ -13,14 +13,14 @@ namespace ArchiveCompare {
         /// <summary>
         /// Initializes a new instance of the <see cref="SplitArchive" /> class.
         /// </summary>
-        /// <param name="name">Archive name.</param>
+        /// <param name="path">Archive name.</param>
         /// <param name="nested">Nested single archive.</param>
         /// <param name="physicalSize">Size of the archive part as reported by file system.</param>
         /// <param name="totalPhysicalSize">Total size of all parts as reported by file system.</param>
         /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
-        public SplitArchive(string name, SingleArchive nested, long physicalSize = 0,
+        public SplitArchive(string path, SingleArchive nested, long physicalSize = 0,
             long totalPhysicalSize = 0, DateTime? lastModified = null)
-            : base(name, ArchiveType.Split, physicalSize, lastModified) {
+            : base(path, ArchiveType.Split, physicalSize, lastModified) {
             Contract.Requires(nested != null);
             Contract.Requires(physicalSize >= 0);
             Contract.Requires(totalPhysicalSize >= 0);

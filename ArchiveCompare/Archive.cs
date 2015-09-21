@@ -77,15 +77,15 @@ namespace ArchiveCompare {
         #endregion
 
         /// <summary> Initializes a new instance of the <see cref="Archive" /> class. </summary>
-        /// <param name="name">Archive name.</param>
+        /// <param name="path">Archive file path.</param>
         /// <param name="type">Archive type.</param>
         /// <param name="physicalSize">Size of the archive as reported by file system.</param>
         /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
-        protected Archive(string name, ArchiveType type, long physicalSize = 0, DateTime? lastModified = null) {
-            Contract.Requires(!string.IsNullOrWhiteSpace(name));
+        protected Archive(string path, ArchiveType type, long physicalSize = 0, DateTime? lastModified = null) {
+            Contract.Requires(!string.IsNullOrWhiteSpace(path));
             Contract.Requires(physicalSize >= 0);
 
-            Name = name;
+            Path = path;
             Type = type;
             LastModified = lastModified;
             PhysicalSize = physicalSize;
@@ -94,8 +94,11 @@ namespace ArchiveCompare {
         private DateTime? _lastModified;
 
         /// <summary> Gets the archive file path.</summary>
-        [NotNull, DataMember(Name = "name", IsRequired = true, Order = 0)]
-        public string Name { get; }
+        [NotNull, DataMember(Name = "path", IsRequired = true, Order = 0)]
+        public string Path { get; }
+
+        /// <summary> Gets this archive name with extension. </summary>
+        public string Name => System.IO.Path.GetFileName(Path);
 
         /// <summary> Gets the archive type. </summary>
         [DataMember(Name = "type", Order = 1)]
@@ -122,12 +125,12 @@ namespace ArchiveCompare {
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
             string lastModified = (LastModified != null) ? ", modified on " + LastModified : string.Empty;
-            return Name + lastModified + ", physical size " + PhysicalSize;
+            return Path + lastModified + ", physical size " + PhysicalSize;
         }
 
         [ContractInvariantMethod]
         private void ObjectInvariant() {
-            Contract.Invariant(!string.IsNullOrWhiteSpace(Name));
+            Contract.Invariant(!string.IsNullOrWhiteSpace(Path));
             Contract.Invariant(PhysicalSize >= 0);
         }
 
@@ -151,7 +154,7 @@ namespace ArchiveCompare {
 
 
         private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
-            typeof(ArchiveTypeDifference), typeof(ArchiveNameDifference), typeof(ArchiveFileCountDifference),
+            typeof(ArchiveTypeDifference), typeof(ArchiveFileNameDifference), typeof(ArchiveFileCountDifference),
             typeof(ArchiveFolderCountDifference), typeof(ArchiveLastModifiedDifference),
             typeof(ArchivePackedSizeDifference), typeof(ArchivePhysicalSizeDifference), typeof(ArchiveSizeDifference),
             typeof(ArchiveTotalPhysicalSizeDifference)

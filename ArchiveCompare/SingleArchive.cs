@@ -12,16 +12,16 @@ namespace ArchiveCompare {
     [DataContract(Name = "singleArchive", IsReference = true, Namespace = "")]
     public class SingleArchive : Archive {
         /// <summary> Initializes a new instance of the <see cref="Archive" /> class. </summary>
-        /// <param name="name">Archive name.</param>
+        /// <param name="path">Archive name.</param>
         /// <param name="type">Archive type.</param>
         /// <param name="entries">Uninitialized archive entries.</param>
         /// <param name="physicalSize">Size of the archive as reported by file system.</param>
         /// <param name="size">Uncompressed contents size, 0 if unavailable. </param>
         /// <param name="packedSize">Cmpressed contents size, 0 if unavailable.</param>
         /// <param name="lastModified">The last modified date for this archive latest modified file.</param>
-        public SingleArchive(string name, ArchiveType type, IEnumerable<Entry> entries,
+        public SingleArchive(string path, ArchiveType type, IEnumerable<Entry> entries,
             long physicalSize = 0, long size = 0, long packedSize = 0, DateTime? lastModified = null)
-            : base (name, type, physicalSize, lastModified) {
+            : base (path, type, physicalSize, lastModified) {
             Contract.Requires(entries != null);
             Contract.Requires(size >= 0);
             Contract.Requires(physicalSize >= 0);
@@ -158,7 +158,7 @@ namespace ArchiveCompare {
                 }
 
                 // Look for parent entry to link with:
-                string parentName = Path.GetDirectoryName(entry.Path);
+                string parentName = System.IO.Path.GetDirectoryName(entry.Path);
                 var parent = directories.GetValue(parentName);
                 if (parent != null) {
                     parent.Add(entry);

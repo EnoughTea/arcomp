@@ -21,10 +21,10 @@ namespace ArchiveCompare {
         public FolderEntry RightParent { get; private set; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
-        public override bool DifferenceExists => LeftParent != RightParent;
+        public override bool DifferenceExists => !Entry.IsHomonymousPath(LeftParent?.Path, RightParent?.Path);
 
-        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
-        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
+        /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
             return base.ToString() + $" ({LeftParent.Path} v {RightParent.Path})";
         }

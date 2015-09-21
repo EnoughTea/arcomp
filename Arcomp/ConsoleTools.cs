@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Linq;
 
 namespace Arcomp {
     /// <summary> Very quick-and-dirty console write helper methods. </summary>
@@ -74,7 +75,7 @@ namespace Arcomp {
             }
         }
 
-        public static void WriteLine(string message = "") {
+        public static void WriteLine(string message) {
             Contract.Requires(message != null);
 
             lock (Locker) {
@@ -82,6 +83,45 @@ namespace Arcomp {
             }
         }
 
+        public static void WriteLine(int emptyLinesCount = 1) {
+            Contract.Requires(emptyLinesCount >= 1);
+
+            lock (Locker) {
+                for (int i = 0; i < emptyLinesCount; i++) {
+                    InternalWriteLine(string.Empty);
+                }
+            }
+        }
+
+
+        public static void PushForeground(ConsoleColor foreground) {
+            lock (Locker) {
+                PushedForegroundColor.Push(Console.ForegroundColor);
+                Console.ForegroundColor = foreground;
+            }
+        }
+
+        /// <exception cref="InvalidOperationException">PushForeground/RestoreForeground imbalance.</exception>
+        public static void PopForegroundOnce() {
+            lock (Locker) {
+                if (PushedForegroundColor.Count > 0) {
+                    Console.ForegroundColor = PushedForegroundColor.Pop();
+                } else {
+                    throw new InvalidOperationException("PushForeground/RestoreForeground imbalance.");
+                }
+            }
+        }
+
+        public static void PopForegroundAll() {
+            lock (Locker) {
+                var first = Console.ForegroundColor;
+                while (PushedForegroundColor.Count > 0) {
+                    first = PushedForegroundColor.Pop();
+                }
+
+                Console.ForegroundColor = first;
+            }
+        }
 
         private static void InternalWrite(string message) {
             Contract.Requires(message != null);
@@ -107,35 +147,6 @@ namespace Arcomp {
             lock (Locker) {
                 string indentString = " ".Repeat(IndentLength);
                 return indentString.Repeat(_indentLevel);
-            }
-        }
-
-        private static void PushForeground(ConsoleColor foreground) {
-            lock (Locker) {
-                PushedForegroundColor.Push(Console.ForegroundColor);
-                Console.ForegroundColor = foreground;
-            }
-        }
-
-        /// <exception cref="InvalidOperationException">PushForeground/RestoreForeground imbalance.</exception>
-        private static void PopForegroundOnce() {
-            lock (Locker) {
-                if (PushedForegroundColor.Count > 0) {
-                    Console.ForegroundColor = PushedForegroundColor.Pop();
-                } else {
-                    throw new InvalidOperationException("PushForeground/RestoreForeground imbalance.");
-                }
-            }
-        }
-
-        private static void PopForegroundAll() {
-            lock (Locker) {
-                var first = Console.ForegroundColor;
-                while (PushedForegroundColor.Count > 0) {
-                    first = PushedForegroundColor.Pop();
-                }
-
-                Console.ForegroundColor = first;
             }
         }
     }

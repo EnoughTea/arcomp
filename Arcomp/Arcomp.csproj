@@ -150,6 +150,7 @@
     </Content>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\ArchiveCompare\ArchiveCompare.csproj">

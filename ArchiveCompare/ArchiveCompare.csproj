@@ -128,7 +128,7 @@
     <Compile Include="Archive differences\ArchiveTypeDifference.cs" />
     <Compile Include="Entry differences\EntryCrcDifference.cs" />
     <Compile Include="Entry differences\EntryFileCountDifference.cs" />
-    <Compile Include="Entry differences\EntryFileNameDifference.cs" />
+    <Compile Include="Entry differences\EntryFilePathDifference.cs" />
     <Compile Include="Entry differences\EntryFolderCountDifference.cs" />
     <Compile Include="Entry differences\EntryLastModifiedDifference.cs" />
     <Compile Include="Entry differences\EntryPackedSizeDifference.cs" />
@@ -138,7 +138,7 @@
     <Compile Include="Archive.cs" />
     <Compile Include="ArchiveType.cs" />
     <Compile Include="Archive differences\ArchiveFileCountDifference.cs" />
-    <Compile Include="Archive differences\ArchiveNameDifference.cs" />
+    <Compile Include="Archive differences\ArchiveFileNameDifference.cs" />
     <Compile Include="Archive differences\ArchiveFolderCountDifference.cs" />
     <Compile Include="Archive differences\ArchiveLastModifiedDifference.cs" />
     <Compile Include="Archive differences\ArchivePackedSizeDifference.cs" />

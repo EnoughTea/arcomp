@@ -71,8 +71,9 @@ namespace ArchiveCompare {
 
             string entryType = Entry.TypeToString(EntryType);
             string header = $"{State.ToString().ToLowerInvariant()} {entryType} '{entryPath}'";
-            string modifications = Differences.Aggregate(":", (acc, diff) => acc + Environment.NewLine +
+            string modifications = Differences.Aggregate(string.Empty, (acc, diff) => acc + Environment.NewLine +
                 diff.ToString());
+            modifications = (modifications.Length > 0) ? ": " + modifications : modifications;
             return $"{header}{modifications}";
         }
 

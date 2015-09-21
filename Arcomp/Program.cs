@@ -21,22 +21,10 @@ namespace Arcomp {
                 } else if (options.Compare.Any()) {
                     CompareArchives(options.Compare);
                 }
-
+#if DEBUG
                 Console.ReadKey();
+#endif
             }
-        }
-
-        // extract entire archive with: 7z x archive.7z -aoa -oC:\outputDir\
-        // extract just a file: 7z x archive.7z "specific path\specific file.txt" -aoa -oC:\outputDir\
-
-        private static Archive[] CreateArchivesFromFiles(IEnumerable<FileInfo> archiveFiles) {
-            StringBuilder totalOutput = new StringBuilder();
-            foreach (var archiveFile in archiveFiles) {
-                var fileOutput = ExecuteSevenZipProcess("l -slt " + archiveFile);
-                totalOutput.Append(fileOutput);
-            }
-
-            return SevenZip.ArchivesFromOutput(totalOutput.ToString()).ToArray();
         }
 
         private static void ShowArchiveMetadata(IList<string> show) {
@@ -54,38 +42,72 @@ namespace Arcomp {
             if (archives.Length == 2) {
                 var left = archives[0];
                 var right = archives[1];
-                var propertiesDiff = Archive.PropertiesDiff(left, right);
+                var propertiesDiff = Archive.PropertiesDiff(left, right).ToArray();
                 var entriesDiff = Archive.EntriesDiff(left, right)
-                    .OrderBy(cmp => cmp.EntryType)
-                    .ThenBy(cmp => cmp.LeftVersion?.Path ?? (cmp.RightVersion?.Path ?? string.Empty));
+                    .OrderByDescending(cmp => cmp.EntryType)
+                    .ThenBy(cmp => cmp.LeftVersion?.Path ?? (cmp.RightVersion?.Path ?? string.Empty)).ToArray();
 
-                ConsoleTools.Info("Properties diff");
-                ConsoleTools.WriteLine("===============");
-                ConsoleTools.WriteLine();
-                foreach (var propertyDiff in propertiesDiff) {
-                    ConsoleTools.WriteLine(propertyDiff.ToString());
-                }
-                ConsoleTools.WriteLine();
-                ConsoleTools.WriteLine();
-                ConsoleTools.Info("Entries diff");
-                ConsoleTools.Info("============");
-                ConsoleTools.WriteLine();
-                foreach (var entryDiff in entriesDiff) {
-                    ConsoleTools.WriteLine(entryDiff.ToString());
-                    ConsoleTools.WriteLine();
+                // Show property diff:
+                string header = $"Property difference between '{left.Path}' and '{right.Path}'";
+                ConsoleTools.Info(header);
+                ConsoleTools.Info("=".Repeat(header.Length));
+                ConsoleTools.Indent();
+                if (propertiesDiff.Any()) {
+                    foreach (var propertyDiff in propertiesDiff) {
+                        ConsoleTools.WriteLine(propertyDiff.ToString());
+                    }
+                } else {
+                    ConsoleTools.Info("Properties are identical.");
                 }
 
+                ConsoleTools.WriteLine(2);
+                ConsoleTools.Unindent();
+                // Show entry diff:
+                header = $"State of '{right.Path}' entries compared to '{left.Path}'";
+                ConsoleTools.Info(header);
+                ConsoleTools.Info("=".Repeat(header.Length));
+                ConsoleTools.Indent();
+                if (entriesDiff.Any()) {
+                    foreach (var entryDiff in entriesDiff) {
+                        if (entryDiff.State == EntryModificationState.Added) {
+                            ConsoleTools.PushForeground(ConsoleColor.Green);
+                        } else if (entryDiff.State == EntryModificationState.Removed) {
+                            ConsoleTools.PushForeground(ConsoleColor.Red);
+                        } else {
+                            ConsoleTools.PushForeground(ConsoleColor.Yellow);
+                        }
+
+                        ConsoleTools.WriteLine(entryDiff.ToString());
+                        ConsoleTools.PopForegroundOnce();
+                    }
+                } else {
+                    ConsoleTools.Info("Entries are identical.");
+                }
+
+                ConsoleTools.Unindent();
             } else {
                 ConsoleTools.Error($"Expected 2 archives to be compared, got {archiveFiles.Length}.");
             }
         }
 
+        /// <summary> Used to parse 7-Zip output for given files. </summary>
+        /// <param name="archiveFiles">Archive files to parse.</param>
+        /// <returns>Parsed archives.</returns>
+        private static Archive[] CreateArchivesFromFiles(IEnumerable<FileInfo> archiveFiles) {
+            StringBuilder totalOutput = new StringBuilder();
+            foreach (var archiveFile in archiveFiles) {
+                var fileOutput = ExecuteSevenZipProcess("l -slt " + archiveFile);
+                totalOutput.Append(fileOutput);
+            }
+
+            return SevenZip.ArchivesFromOutput(totalOutput.ToString()).ToArray();
+        }
+
         /// <summary> Executes the 7-Zip with given command line arguments, returns its stdout as a string. </summary>
+        /// <remarks> Password-protected archives are not supported. </remarks>
         /// <param name="arguments">Command line arguments passed to 7-Zip.</param>
         /// <param name="pathTo7Z">The path to 7-Zip console executable.</param>
-        /// <returns>
-        /// 7-Zip stdout after execution.
-        /// </returns>
+        /// <returns> 7-Zip stdout after execution. </returns>
         private static string ExecuteSevenZipProcess(string arguments = "", string pathTo7Z = null) {
             if (string.IsNullOrWhiteSpace(pathTo7Z)) {
                 pathTo7Z = "7z" + Path.DirectorySeparatorChar + "7z.exe";
@@ -133,9 +155,7 @@ namespace Arcomp {
             if (e != null) {
                 ConsoleTools.Exception(e);
             }
-#if DEBUG
-            Console.ReadKey();
-#endif
+
             Environment.Exit(1);
         }
     }

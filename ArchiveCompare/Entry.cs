@@ -14,22 +14,22 @@ namespace ArchiveCompare {
 
         #region Static methods
 
-        /// <summary> Determines whether two entries (possibly from different archives) have the homonymous parent
-        ///  hierarchy all the way up to root. </summary>
-        /// <remarks>
-        ///  Entries with same path in different archives are considired to have the same parent hierarchy.
-        /// </remarks>
+        /// <summary>
+        /// Determines whether any two entry paths (possibly from different archives) are homonymous.
+        /// </summary>
+        /// <param name="firstPath">First entry path.</param>
+        /// <param name="secondPath">Second entry path.</param>
+        /// <param name="caseInsensitive">if set to <c>true</c>, path are considired case insensitive.</param>
         /// <returns>
-        ///  true if both entries has the same-named parent hierarchy all the way up to root; false otherwise.
+        /// true if both entries has the same path; false otherwise.
         /// </returns>
-        public static bool IsHomonymousParentPath([CanBeNull] Entry first, [CanBeNull] Entry second) {
-            if (first == null || second == null) { return false; }
-            // If at least one entry is a root entry, 'true' is only possible when other entry is a root entry too:
-            if (first.ParentFolder == null || second.ParentFolder == null) {
-                return first.ParentFolder == second.ParentFolder;
-            }
-
-            return first.ParentFolder.IsHomonymousPath(second.ParentFolder);
+        /// <remarks>
+        /// Entries with same path in different archives are considired to have the same parent hierarchy.
+        /// </remarks>
+        public static bool IsHomonymousPath([CanBeNull] string firstPath, [CanBeNull] string secondPath,
+            bool caseInsensitive = true) {
+            var comparison = caseInsensitive ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+            return string.Equals(firstPath, secondPath, comparison);
         }
 
         /// <summary> Finds proeprty differences between entries. </summary>
@@ -146,7 +146,7 @@ namespace ArchiveCompare {
         /// <param name="entryPath">The entry path to check for homonymousity.</param>
         /// <returns>true if entries have the same path; false otherwise.</returns>
         public bool IsHomonymousPath([CanBeNull] string entryPath) {
-            return string.Equals(Path, NormalizePath(entryPath), StringComparison.OrdinalIgnoreCase);
+            return IsHomonymousPath(Path, NormalizePath(entryPath));
         }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
@@ -178,7 +178,7 @@ namespace ArchiveCompare {
             .ToDictionary(key => key.Value, value => value.Key);
 
         private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
-            typeof(EntryTypeDifference), typeof(EntryFileNameDifference), typeof(EntryParentFolderDifference),
+            typeof(EntryTypeDifference), typeof(EntryFilePathDifference), typeof(EntryParentFolderDifference),
             typeof(EntryLastModifiedDifference), typeof(EntrySizeDifference), typeof(EntryPackedSizeDifference),
             typeof(EntryCrcDifference), typeof(EntryFileCountDifference), typeof(EntryFolderCountDifference)
         };

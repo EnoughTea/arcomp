@@ -126,7 +126,7 @@ namespace ArchiveCompare {
             string size = simpleLineEntry.Substring(26, 12).Trim();
             string packedSize = simpleLineEntry.Substring(39, 12).Trim();
             string modified = simpleLineEntry.Substring(0, 19).Trim();
-            return CreateFromProperties(path, modified, attributes, size, packedSize, null);
+            return EntryFromProperties(path, modified, attributes, size, packedSize, null);
         }
 
         [CanBeNull]
@@ -134,13 +134,13 @@ namespace ArchiveCompare {
             Contract.Requires(!string.IsNullOrEmpty(sevenZipEntryOutput));
 
             var entryData = SevenZipTools.MakeValueMap(sevenZipEntryOutput);
-            return CreateFromProperties(entryData.GetValue("Path"), entryData.GetValue("Modified"),
+            return EntryFromProperties(entryData.GetValue("Path"), entryData.GetValue("Modified"),
                 entryData.GetValue("Attributes"), entryData.GetValue("Size"),
                 entryData.GetValue("Packed Size"), entryData.GetValue("CRC"));
         }
 
         [CanBeNull]
-        private static Entry CreateFromProperties([CanBeNull] string path, [CanBeNull] string modified,
+        private static Entry EntryFromProperties([CanBeNull] string path, [CanBeNull] string modified,
             [CanBeNull] string attributes, [CanBeNull] string size, [CanBeNull] string packedSize,
             [CanBeNull] string crc) {
             if (string.IsNullOrWhiteSpace(path)) { return null; }
