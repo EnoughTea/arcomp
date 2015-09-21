@@ -55,7 +55,7 @@ namespace ArchiveCompare {
 
         /// <summary> Gets the archive root entries. </summary>
         [NotNull]
-        public IEnumerable<Entry> Contents => _contents;
+        public override IEnumerable<Entry> Contents => _contents;
 
         /// <summary> Converts hierarchical contents into flat sequence. </summary>
         /// <returns> Flattened contents. </returns>

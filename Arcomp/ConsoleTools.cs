@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
-using System.Linq;
 
 namespace Arcomp {
     /// <summary> Very quick-and-dirty console write helper methods. </summary>
@@ -16,9 +15,8 @@ namespace Arcomp {
             Contract.Requires(!string.IsNullOrEmpty(message));
 
             lock (Locker) {
-                Console.WriteLine(message);
+                InternalWriteLine(message);
             }
-
         }
 
         public static void Error(string message) {

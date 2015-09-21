@@ -6,15 +6,19 @@ using CommandLine.Text;
 
 namespace Arcomp {
     /// <summary> Holds all available command line options. </summary>
-    /// <remarks> Note that filenames are divided by ':' symbol instead of space.</remarks>
+    /// <remarks> Note that filenames are divided by space, so they must be quoted.</remarks>
     internal sealed class CommandLineOptions {
-        [OptionList('s', "show", Required = false, DefaultValue = new string[0],
+        [Option('s', "show", Required = false, DefaultValue = false,
             HelpText = "Shows properties and entries for the given archives.", MutuallyExclusiveSet = "show")]
-        public IList<string> Show { get; set; }
+        public bool Show { get; set; }
 
-        [OptionList('c', "compare", Required = false, DefaultValue = new string[0],
+        [Option('c', "compare", Required = false, DefaultValue = false,
             HelpText = "Compares properties and entries of the given 2 archives.", MutuallyExclusiveSet = "compare")]
-        public IList<string> Compare { get; set; }
+        public bool Compare { get; set; }
+
+        /// <summary> Gets the passed archive files. </summary>
+        [ValueList(typeof(List<string>))]
+        public IList<string> ArchiveFiles { get; set; }
 
         [ParserState]
         public IParserState LastParserState { get; set; }
@@ -28,15 +32,14 @@ namespace Arcomp {
             };
 
             HandleParsingErrorsInHelp(help);
-            help.AddPreOptionsLine("Please, note that filenames are divided by ':' instead of space. " +
-                " Password-protected archives are not supported.");
+            help.AddPreOptionsLine("Password-protected archives are not supported.");
             help.AddPreOptionsLine(Environment.NewLine + "Usage examples:");
             help.AddPreOptionsLine(string.Empty);
-            help.AddPreOptionsLine("Show properties and entries of 3 archives using different paths:");
-            help.AddPreOptionsLine("Usage: arcomp -s archive 1.zip:..\\archive 2.rar:C:\\Some folder\\some archive.7z");
+            help.AddPreOptionsLine("Shows properties and entries of one or more archives:");
+            help.AddPreOptionsLine("Usage: arcomp -s \"archive 1.zip\" \"..\\another archive 2.rar\" \"C:\\some folder\\other archive 3.7z\"");
             help.AddPreOptionsLine(string.Empty);
-            help.AddPreOptionsLine("Compares two archives and shows the difference in properties and entries:");
-            help.AddPreOptionsLine("Usage: arcomp -c archive 1.zip:archive 2.rar");
+            help.AddPreOptionsLine("Compares two archives and shows their difference in properties and entries:");
+            help.AddPreOptionsLine("Usage: arcomp -c \"archive 1.zip\" \"..\\another archive 2.rar\"");
             help.AddOptions(this);
 
             return help;

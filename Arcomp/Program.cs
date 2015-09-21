@@ -16,10 +16,10 @@ namespace Arcomp {
 #endif
             var options = new CommandLineOptions();
             if (Parser.Default.ParseArgumentsStrict(args, options)) {
-                if (options.Show.Any()) {
-                    ShowArchiveMetadata(options.Show);
-                } else if (options.Compare.Any()) {
-                    CompareArchives(options.Compare);
+                if (options.Show) {
+                    ShowArchiveMetadata(options.ArchiveFiles);
+                } else if (options.Compare) {
+                    CompareArchives(options.ArchiveFiles);
                 }
 #if DEBUG
                 Console.ReadKey();
@@ -30,64 +30,85 @@ namespace Arcomp {
         private static void ShowArchiveMetadata(IList<string> show) {
             var archiveFiles = PathTools.GatherFiles(show).ToArray();
             var archives = CreateArchivesFromFiles(archiveFiles);
+            if (archives.Length == 0) {
+                ConsoleTools.Error("Expected one or more archives to be shown, got 0.");
+                return;
+            }
+
             foreach (var archive in archives) {
-                ConsoleTools.Info(archive.ToString());
-                ConsoleTools.WriteLine();
+            // Show archive properties:
+            ConsoleTools.Info(archive.ToString());
+            // and entries:
+            if (archive.Contents.Any()) {
+                ConsoleTools.WriteLine("{");
+                ConsoleTools.Indent();
+                foreach (var entry in archive.Contents) {
+                    ConsoleTools.WriteLine(entry.ToString());
+                }
+
+                ConsoleTools.Unindent();
+                ConsoleTools.WriteLine("}");
+            }
+
+            ConsoleTools.WriteLine();
             }
         }
 
         private static void CompareArchives(IList<string> compare) {
             var archiveFiles = PathTools.GatherFiles(compare).ToArray();
             var archives = CreateArchivesFromFiles(archiveFiles);
-            if (archives.Length == 2) {
-                var left = archives[0];
-                var right = archives[1];
-                var propertiesDiff = Archive.PropertiesDiff(left, right).ToArray();
-                var entriesDiff = Archive.EntriesDiff(left, right)
-                    .OrderByDescending(cmp => cmp.EntryType)
-                    .ThenBy(cmp => cmp.LeftVersion?.Path ?? (cmp.RightVersion?.Path ?? string.Empty)).ToArray();
-
-                // Show property diff:
-                string header = $"Property difference between '{left.Path}' and '{right.Path}'";
-                ConsoleTools.Info(header);
-                ConsoleTools.Info("=".Repeat(header.Length));
-                ConsoleTools.Indent();
-                if (propertiesDiff.Any()) {
-                    foreach (var propertyDiff in propertiesDiff) {
-                        ConsoleTools.WriteLine(propertyDiff.ToString());
-                    }
-                } else {
-                    ConsoleTools.Info("Properties are identical.");
-                }
-
-                ConsoleTools.WriteLine(2);
-                ConsoleTools.Unindent();
-                // Show entry diff:
-                header = $"State of '{right.Path}' entries compared to '{left.Path}'";
-                ConsoleTools.Info(header);
-                ConsoleTools.Info("=".Repeat(header.Length));
-                ConsoleTools.Indent();
-                if (entriesDiff.Any()) {
-                    foreach (var entryDiff in entriesDiff) {
-                        if (entryDiff.State == EntryModificationState.Added) {
-                            ConsoleTools.PushForeground(ConsoleColor.Green);
-                        } else if (entryDiff.State == EntryModificationState.Removed) {
-                            ConsoleTools.PushForeground(ConsoleColor.Red);
-                        } else {
-                            ConsoleTools.PushForeground(ConsoleColor.Yellow);
-                        }
-
-                        ConsoleTools.WriteLine(entryDiff.ToString());
-                        ConsoleTools.PopForegroundOnce();
-                    }
-                } else {
-                    ConsoleTools.Info("Entries are identical.");
-                }
-
-                ConsoleTools.Unindent();
-            } else {
+            if (archives.Length != 2) {
                 ConsoleTools.Error($"Expected 2 archives to be compared, got {archiveFiles.Length}.");
+                return;
             }
+
+            var left = archives[0];
+            var right = archives[1];
+            var propertiesDiff = Archive.PropertiesDiff(left, right).ToArray();
+            // Sort entries so folders will be first, and files second, and then sort them again by filename:
+            var entriesDiff = Archive.EntriesDiff(left, right)
+                .OrderByDescending(cmp => cmp.EntryType)
+                .ThenBy(cmp => cmp.LeftVersion?.Path ?? (cmp.RightVersion?.Path ?? string.Empty)).ToArray();
+
+            // Show properties diff:
+            string header = $"Property difference between '{left.Path}' and '{right.Path}'";
+            ConsoleTools.Info(header);
+            ConsoleTools.Info("=".Repeat(header.Length));
+            ConsoleTools.Indent();
+            if (propertiesDiff.Any()) {
+                foreach (var propertyDiff in propertiesDiff) {
+                    ConsoleTools.WriteLine(propertyDiff.ToString());
+                }
+            } else {
+                ConsoleTools.Info("Properties are identical.");
+            }
+
+            ConsoleTools.WriteLine(2);
+            ConsoleTools.Unindent();
+
+            // Show entries diff:
+            header = $"State of '{right.Path}' entries compared to '{left.Path}'";
+            ConsoleTools.Info(header);
+            ConsoleTools.Info("=".Repeat(header.Length));
+            ConsoleTools.Indent();
+            if (entriesDiff.Any()) {
+                foreach (var entryDiff in entriesDiff) {
+                    if (entryDiff.State == EntryModificationState.Added) {
+                        ConsoleTools.PushForeground(ConsoleColor.Green);
+                    } else if (entryDiff.State == EntryModificationState.Removed) {
+                        ConsoleTools.PushForeground(ConsoleColor.Red);
+                    } else {
+                        ConsoleTools.PushForeground(ConsoleColor.Yellow);
+                    }
+
+                    ConsoleTools.WriteLine(entryDiff.ToString());
+                    ConsoleTools.PopForegroundOnce();
+                }
+            } else {
+                ConsoleTools.Info("Entries are identical.");
+            }
+
+            ConsoleTools.Unindent();
         }
 
         /// <summary> Used to parse 7-Zip output for given files. </summary>

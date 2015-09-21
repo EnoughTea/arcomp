@@ -128,6 +128,9 @@ namespace ArchiveCompare {
             return Path + lastModified + ", physical size " + PhysicalSize;
         }
 
+        /// <summary> Gets the archive root entries. </summary>
+        public abstract IEnumerable<Entry> Contents { get; }
+
         [ContractInvariantMethod]
         private void ObjectInvariant() {
             Contract.Invariant(!string.IsNullOrWhiteSpace(Path));

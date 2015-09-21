@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Runtime.Serialization;
 using JetBrains.Annotations;
@@ -35,6 +36,10 @@ namespace ArchiveCompare {
 
         /// <summary> Gets total size of the archive as reported by file system. </summary>
         public long TotalPhysicalSize => (_totalPhysicalSize == 0) ? Nested.PhysicalSize : _totalPhysicalSize;
+
+        /// <summary> Gets the archive root entries. </summary>
+        [NotNull]
+        public override IEnumerable<Entry> Contents => Nested.Contents;
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>

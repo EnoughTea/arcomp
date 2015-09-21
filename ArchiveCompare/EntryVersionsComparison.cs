@@ -6,13 +6,13 @@ using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
-    /// <summary> Represents differences between 'left' and 'right' versions of the same entry. </summary>
+    /// <summary> Represents differences between 'left' and 'right' versions of the archive entry. </summary>
     [DataContract(Name = "entryCmp", IsReference = true, Namespace = "")]
     public class EntryVersionsComparison {
         /// <summary> Initializes a new instance of the <see cref="EntryVersionsComparison"/> class. </summary>
         /// <param name="leftVersion">The left version.</param>
         /// <param name="rightVersion">The right version.</param>
-        /// <exception cref="System.ArgumentNullException">Both sides cannot be null</exception>
+        /// <exception cref="ArgumentNullException">Both sides cannot be null</exception>
         public EntryVersionsComparison([CanBeNull] Entry leftVersion, [CanBeNull] Entry rightVersion) {
             LeftVersion = leftVersion;
             RightVersion = rightVersion;
@@ -57,8 +57,8 @@ namespace ArchiveCompare {
         [NotNull, DataMember(Name = "diff", Order = 10)]
         public IEnumerable<EntryTraitDifference> Differences { get; }
 
-        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
-        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
+        /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
             string entryPath;
             if (LeftVersion != null) {
