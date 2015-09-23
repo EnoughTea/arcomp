@@ -22,7 +22,8 @@ namespace ArchiveCompare {
         public DateTime? RightLastModified { get; private set; }
 
         /// <summary> Gets a value indicating whether the archives differ by this trait. </summary>
-        public override bool DifferenceExists => LeftLastModified != RightLastModified;
+        public override bool DifferenceExists =>
+            LeftLastModified?.ToUniversalTime() != RightLastModified?.ToUniversalTime();
 
         /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
         /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
