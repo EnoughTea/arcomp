@@ -138,6 +138,7 @@ namespace ArchiveCompare {
         }
 
         private static readonly Dictionary<ArchiveType, string> TypesToNames = new Dictionary<ArchiveType, string> {
+            { ArchiveType.Bsa, "bsa" },
             { ArchiveType.BZip2, "bzip2" },
             { ArchiveType.GZip, "gzip" },
             { ArchiveType.Mbr, "mbr" },

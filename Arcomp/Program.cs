@@ -30,34 +30,34 @@ namespace Arcomp {
         private static void ShowArchiveMetadata(IList<string> show) {
             var archiveFiles = PathTools.GatherFiles(show).ToArray();
             var archives = CreateArchivesFromFiles(archiveFiles);
-            if (archives.Length == 0) {
+            if (archives.Count == 0) {
                 ConsoleTools.Error("Expected one or more archives to be shown, got 0.");
                 return;
             }
 
             foreach (var archive in archives) {
-            // Show archive properties:
-            ConsoleTools.Info(archive.ToString());
-            // and entries:
-            if (archive.Contents.Any()) {
-                ConsoleTools.WriteLine("{");
-                ConsoleTools.Indent();
-                foreach (var entry in archive.Contents) {
-                    ConsoleTools.WriteLine(entry.ToString());
+                // Show archive properties:
+                ConsoleTools.Info(archive.ToString());
+                // and entries:
+                if (archive.Contents.Any()) {
+                    ConsoleTools.WriteLine("{");
+                    ConsoleTools.Indent();
+                    foreach (var entry in archive.Contents) {
+                        ConsoleTools.WriteLine(entry.ToString());
+                    }
+
+                    ConsoleTools.Unindent();
+                    ConsoleTools.WriteLine("}");
                 }
 
-                ConsoleTools.Unindent();
-                ConsoleTools.WriteLine("}");
-            }
-
-            ConsoleTools.WriteLine();
+                ConsoleTools.WriteLine();
             }
         }
 
         private static void CompareArchives(IList<string> compare) {
             var archiveFiles = PathTools.GatherFiles(compare).ToArray();
             var archives = CreateArchivesFromFiles(archiveFiles);
-            if (archives.Length != 2) {
+            if (archives.Count != 2) {
                 ConsoleTools.Error($"Expected 2 archives to be compared, got {archiveFiles.Length}.");
                 return;
             }
@@ -114,14 +114,28 @@ namespace Arcomp {
         /// <summary> Used to parse 7-Zip output for given files. </summary>
         /// <param name="archiveFiles">Archive files to parse.</param>
         /// <returns>Parsed archives.</returns>
-        private static Archive[] CreateArchivesFromFiles(IEnumerable<FileInfo> archiveFiles) {
-            StringBuilder totalOutput = new StringBuilder();
+        private static List<Archive> CreateArchivesFromFiles(IEnumerable<FileInfo> archiveFiles) {
+            List<Archive> created = new List<Archive>();
+            var sevenZipOutput = new StringBuilder();
             foreach (var archiveFile in archiveFiles) {
-                var fileOutput = ExecuteSevenZipProcess("l -slt " + archiveFile);
-                totalOutput.Append(fileOutput);
+                if (archiveFile.Extension == ".bsa") {
+                    string path = archiveFile.FullName;
+                    using (var bsaData = File.OpenRead(path)) {
+                        var archive = Bsa.ArchiveFromStream(path, archiveFile.LastWriteTimeUtc, bsaData);
+                        if (archive != null) {
+                            created.Add(archive);
+                        }
+                    }
+                } else {
+                    sevenZipOutput.Append(ExecuteSevenZipProcess("l -slt " + archiveFile));
+                }
             }
 
-            return SevenZip.ArchivesFromOutput(totalOutput.ToString()).ToArray();
+            if (sevenZipOutput.Length > 0) {
+                created.AddRange(SevenZip.ArchivesFromOutput(sevenZipOutput.ToString()));
+            }
+
+            return created;
         }
 
         /// <summary> Executes the 7-Zip with given command line arguments, returns its stdout as a string. </summary>

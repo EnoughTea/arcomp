@@ -5,6 +5,8 @@
         Unknown,
         /// <summary> Split archive, consisting of several volumes. </summary>
         Split,
+        /// <summary> Bethesda archive. </summary>
+        Bsa,
         /// <summary> bzip2. </summary>
         BZip2,
         /// <summary> gzip. </summary>

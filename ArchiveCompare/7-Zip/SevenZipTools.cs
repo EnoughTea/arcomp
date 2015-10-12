@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Text.RegularExpressions;
 using JetBrains.Annotations;
 
@@ -10,6 +12,22 @@ namespace ArchiveCompare {
         public static readonly string[] NewLine = { Environment.NewLine };
 
         public static readonly string[] EmptyLine = { Environment.NewLine + Environment.NewLine };
+
+        /// <summary> Returns all directories which can be inferred from the given paths. </summary>
+        /// <remarks> Given paths { "folder\file.txt", "folder\file2.txt", "otherFolder\blah" }
+        ///  will return { "folder", "otherFolder" }.</remarks>
+        /// <param name="paths">Sequence of paths.</param>
+        /// <returns></returns>
+        public static HashSet<string> InferDirectoriesFromPaths(IEnumerable<string> paths) {
+            var detectedDirectories = new HashSet<string>();
+            foreach (var path in paths
+                .Select(Path.GetDirectoryName)
+                .Where(parentDirectory => !string.IsNullOrEmpty(parentDirectory))) {
+                detectedDirectories.Add(path);
+            }
+
+            return detectedDirectories;
+        }
 
         /// <summary> Turns 7zip data section into a key-value map. </summary>
         /// <remarks> Passed data section looks like: <code>

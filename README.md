@@ -1,6 +1,7 @@
 ﻿# arcomp
 
-arcomp is a simple command-line utility used to compare archives or show their contents. It uses parsed 7-Zip output, and is designed mainly as a showcase for underlying library. Password-protected archives are not supported.
+arcomp is a simple command-line utility used to compare archives or show their contents. App uses parsed 7-Zip output and can also read TES 3–TES 5 .bsa files.
+It is designed mainly as a showcase for underlying library. Password-protected archives are not supported.
 
 ### Usage examples
 

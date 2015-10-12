@@ -3,37 +3,37 @@ using System.Runtime.Serialization;
 using JetBrains.Annotations;
 
 namespace ArchiveCompare {
-    /// <summary> Represents an entry difference by CRC. </summary>
-    [DataContract(Name = "eCrcDiff", IsReference = true, Namespace = "")]
-    public class EntryCrcDifference : EntryTraitDifference {
-        /// <summary> Initializes a new instance of the <see cref="EntryCrcDifference" /> class. </summary>
+    /// <summary> Represents an entry difference by a hash. </summary>
+    [DataContract(Name = "eHashDiff", IsReference = true, Namespace = "")]
+    public class EntryHashDifference : EntryTraitDifference {
+        /// <summary> Initializes a new instance of the <see cref="EntryHashDifference" /> class. </summary>
         /// <param name="left">Left entry.</param>
         /// <param name="right">Right entry.</param>
-        public EntryCrcDifference([CanBeNull] Entry left, [CanBeNull] Entry right)
+        public EntryHashDifference([CanBeNull] Entry left, [CanBeNull] Entry right)
             : base(left, right) {
         }
 
-        /// <summary> Gets the left CRC. </summary>
-        [DataMember(Name = "lCrc", Order = 0)]
-        public int LeftCrc { get; private set; }
+        /// <summary> Gets the left hash. </summary>
+        [DataMember(Name = "lHash", Order = 0)]
+        public long LeftHash { get; private set; }
 
-        /// <summary> Gets the right CRC. </summary>
-        [DataMember(Name = "rCrc", Order = 1)]
-        public int RightCrc { get; private set; }
+        /// <summary> Gets the right hash. </summary>
+        [DataMember(Name = "rHash", Order = 1)]
+        public long RightHash { get; private set; }
 
         /// <summary> Gets a value indicating whether the entries differ by this trait. </summary>
-        public override bool DifferenceExists => LeftCrc != RightCrc;
+        public override bool DifferenceExists => LeftHash != RightHash;
 
-        /// <summary> Returns a <see cref="System.String" /> that represents this instance. </summary>
-        /// <returns> A <see cref="System.String" /> that represents this instance. </returns>
+        /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
+        /// <returns> A <see cref="string" /> that represents this instance. </returns>
         public override string ToString() {
-            string leftCrc = (LeftCrc != FileEntry.NoCrc)
-                ? LeftCrc.ToString("X8", CultureInfo.InvariantCulture)
+            string leftHash = (LeftHash != FileEntry.NoHash)
+                ? LeftHash.ToString("X16", CultureInfo.InvariantCulture)
                 : "n/a";
-            string rightCrc = (RightCrc != FileEntry.NoCrc)
-                ? RightCrc.ToString("X8", CultureInfo.InvariantCulture)
+            string rightHash = (RightHash != FileEntry.NoHash)
+                ? RightHash.ToString("X16", CultureInfo.InvariantCulture)
                 : "n/a";
-            return base.ToString() + $" ({leftCrc} v {rightCrc})";
+            return base.ToString() + $" ({leftHash} v {rightHash})";
         }
 
         /// <summary> Initializes comparison from two files. </summary>
@@ -41,8 +41,8 @@ namespace ArchiveCompare {
         /// <param name="right">Right file.</param>
         /// <returns>true if comparison of two files by this trait can be performed; false otherwise.</returns>
         protected override bool InitFromFiles(FileEntry left, FileEntry right) {
-            LeftCrc = left.Crc;
-            RightCrc = right.Crc;
+            LeftHash = left.Hash;
+            RightHash = right.Hash;
             return true;
         }
 
@@ -52,8 +52,8 @@ namespace ArchiveCompare {
         /// <returns>true if comparison of file and folder entries by this trait can be performed;
         ///  false otherwise.</returns>
         protected override bool InitFromFileAndFolder(FileEntry left, FolderEntry right) {
-            LeftCrc = left.Crc;
-            RightCrc = FileEntry.NoCrc;
+            LeftHash = left.Hash;
+            RightHash = FileEntry.NoHash;
             return true;
         }
 
@@ -63,8 +63,8 @@ namespace ArchiveCompare {
         /// <returns>true if comparison of folder and file entries by this trait can be performed;
         ///  false otherwise.</returns>
         protected override bool InitFromFolderAndFile(FolderEntry left, FileEntry right) {
-            LeftCrc = FileEntry.NoCrc;
-            RightCrc = right.Crc;
+            LeftHash = FileEntry.NoHash;
+            RightHash = right.Hash;
             return true;
         }
     }

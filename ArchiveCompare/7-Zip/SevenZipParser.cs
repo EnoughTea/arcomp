@@ -55,12 +55,7 @@ namespace ArchiveCompare {
 
             // 'D' attribute does not exist sometimes, like in PE archives, so try to detect folder entries.
             // For every entry a simple lookup is made to see if some other entry uses it as a directory.
-            var detectedDirectories = new HashSet<string>();
-            foreach (var entry in entries
-                .Select(entry => Path.GetDirectoryName(entry.Path))
-                .Where(parentDirectory => !string.IsNullOrEmpty(parentDirectory))) {
-                detectedDirectories.Add(entry);
-            }
+            var detectedDirectories = SevenZipTools.InferDirectoriesFromPaths(entries.Select(entry => entry.Path));
             // Now check created entries agains detected folders,
             // and fix those created file entries that should be folder entries.
             for (int index = 0; index < entries.Length; index++) {

@@ -103,12 +103,12 @@ namespace ArchiveCompare {
         [DataMember(Name = "modified", IsRequired = false, EmitDefaultValue = false, Order = 1)]
         public DateTime? LastModified { get; }
 
-        /// <summary> Gets or sets the uncompressed size. 0 means that entry is a folder or
+        /// <summary> Gets or sets the uncompressed size in bytes. 0 means that entry is a folder or
         ///  uncompressed size is unavailable. </summary>
         [DataMember(Name = "size", IsRequired = false, Order = 2)]
         public long Size { get; }
 
-        /// <summary> Gets or sets the compressed size.
+        /// <summary> Gets or sets the compressed size in bytes.
         /// 0 means that either entry is a folder, or no compression was done on the entry,
         /// or compressed size is unavailable.
         /// </summary>
@@ -180,7 +180,7 @@ namespace ArchiveCompare {
         private static readonly HashSet<Type> Comparisons = new HashSet<Type> {
             typeof(EntryTypeDifference), typeof(EntryFilePathDifference), typeof(EntryParentFolderDifference),
             typeof(EntryLastModifiedDifference), typeof(EntrySizeDifference), typeof(EntryPackedSizeDifference),
-            typeof(EntryCrcDifference), typeof(EntryFileCountDifference), typeof(EntryFolderCountDifference)
+            typeof(EntryHashDifference), typeof(EntryFileCountDifference), typeof(EntryFolderCountDifference)
         };
     }
 }

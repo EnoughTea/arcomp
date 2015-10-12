@@ -126,7 +126,12 @@
     <Compile Include="Archive differences\ArchivePhysicalSizeDifference.cs" />
     <Compile Include="Archive differences\ArchiveTotalPhysicalSizeDifference.cs" />
     <Compile Include="Archive differences\ArchiveTypeDifference.cs" />
-    <Compile Include="Entry differences\EntryCrcDifference.cs" />
+    <Compile Include="BSA\Bsa.cs" />
+    <Compile Include="BSA\BsaArchive.cs" />
+    <Compile Include="BSA\BsaFileRecord.cs" />
+    <Compile Include="BSA\BsaFolderRecord.cs" />
+    <Compile Include="BSA\BsaHeader.cs" />
+    <Compile Include="Entry differences\EntryHashDifference.cs" />
     <Compile Include="Entry differences\EntryFileCountDifference.cs" />
     <Compile Include="Entry differences\EntryFilePathDifference.cs" />
     <Compile Include="Entry differences\EntryFolderCountDifference.cs" />
@@ -149,6 +154,7 @@
     <Compile Include="EntryModificationState.cs" />
     <Compile Include="EntryType.cs" />
     <Compile Include="EntryVersionsComparison.cs" />
+    <Compile Include="Extensions\BinaryReaderExtensions.cs" />
     <Compile Include="Extensions\DictionaryExtensions.cs" />
     <Compile Include="Extensions\GlobalExtensions.cs" />
     <Compile Include="Extensions\ListExtensions.cs" />

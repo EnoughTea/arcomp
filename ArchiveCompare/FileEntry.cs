@@ -12,24 +12,24 @@ namespace ArchiveCompare {
         /// <param name="size">Uncompressed size. 0 means uncompressed size is unavailable.</param>
         /// <param name="packedSize">Compressed size. 0 means that either compressed size is unavailable or
         ///     no compression was done on the entry.</param>
-        /// <param name="crc">File checksum, values less than zero means CRC in unavailable.</param>
+        /// <param name="hash">File hash, value equal to <see cref="NoHash"/> means hash in unavailable.</param>
         /// <param name="parent">Parent directory. Null means entry is located at archive's root.</param>
         public FileEntry(string path, DateTime? lastModified = null, long size = 0, long packedSize = 0,
-            int crc = NoCrc, FolderEntry parent = null)
+            long hash = NoHash, FolderEntry parent = null)
             : base(path, lastModified,  size, packedSize, parent) {
             Contract.Requires(!string.IsNullOrWhiteSpace(path));
             Contract.Requires(size >= 0);
             Contract.Requires(packedSize >= 0);
 
-            Crc = crc;
+            Hash = hash;
         }
 
         /// <summary> Gets this file's name with extension. </summary>
         public override string Name => System.IO.Path.GetFileName(Path);
 
-        /// <summary> File checksum, values less than zero means CRC in unavailable. </summary>
-        [DataMember(Name = "crc", IsRequired = false)]
-        public int Crc { get; }
+        /// <summary> File hash. </summary>
+        [DataMember(Name = "hash", IsRequired = false)]
+        public long Hash { get; }
 
         /// <summary> Returns a <see cref="string" /> that represents this instance. </summary>
         /// <returns> A <see cref="string" /> that represents this instance. </returns>
@@ -37,7 +37,7 @@ namespace ArchiveCompare {
             return "file " + base.ToString() +", size " + Size + ", packed size " + PackedSize;
         }
 
-        /// <summary> Means CRC is unavailable. </summary>
-        internal const int NoCrc = -1;
+        /// <summary> Means hash is unavailable. </summary>
+        internal const int NoHash = 0;
     }
 }
