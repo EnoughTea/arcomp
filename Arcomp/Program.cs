@@ -11,9 +11,9 @@ using CommandLine;
 namespace Arcomp {
     class Program {
         static void Main(string[] args) {
-#if !DEBUG
-            AppDomain.CurrentDomain.UnhandledException += OnUnhandledException;
-#endif
+            bool debug = Debugger.IsAttached;
+            if (!debug) { AppDomain.CurrentDomain.UnhandledException += OnUnhandledException; }
+
             var options = new CommandLineOptions();
             if (Parser.Default.ParseArgumentsStrict(args, options)) {
                 if (options.Show) {
@@ -21,9 +21,8 @@ namespace Arcomp {
                 } else if (options.Compare) {
                     CompareArchives(options.ArchiveFiles);
                 }
-#if DEBUG
-                Console.ReadKey();
-#endif
+
+                if (debug) { Console.ReadKey(); }
             }
         }
 
