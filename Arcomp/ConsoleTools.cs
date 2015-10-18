@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 
 namespace Arcomp {
-    /// <summary> Very quick-and-dirty console write helper methods. </summary>
+    /// <summary> Console write helpers. </summary>
+    /// <remarks> Locks on every method. </remarks>
     internal static class ConsoleTools {
         private static readonly object Locker = new object();
         private static readonly Stack<ConsoleColor> PushedForegroundColor = new Stack<ConsoleColor>();
