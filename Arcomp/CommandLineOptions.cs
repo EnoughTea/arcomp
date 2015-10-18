@@ -33,20 +33,20 @@ namespace Arcomp {
 
             HandleParsingErrorsInHelp(help);
             help.AddPreOptionsLine("Password-protected archives are not supported.");
-            help.AddPreOptionsLine(Environment.NewLine + "Usage examples:");
-            help.AddPreOptionsLine(string.Empty);
-            help.AddPreOptionsLine("Shows properties and entries of one or more archives:");
-            help.AddPreOptionsLine("Usage: arcomp -s \"archive 1.zip\" \"..\\another archive 2.rar\" \"C:\\some folder\\other archive 3.7z\"");
-            help.AddPreOptionsLine(string.Empty);
-            help.AddPreOptionsLine("Compares two archives and shows their difference in properties and entries:");
-            help.AddPreOptionsLine("Usage: arcomp -c \"archive 1.zip\" \"..\\another archive 2.rar\"");
+            help.AddPostOptionsLine(Environment.NewLine + "Usage examples");
+            help.AddPostOptionsLine(string.Empty);
+            help.AddPostOptionsLine("Shows properties and entries of one or more archives:");
+            help.AddPostOptionsLine("arcomp -s \"archive 1.zip\" \"..\\another archive 2.rar\" \"C:\\some folder\\other archive 3.7z\"");
+            help.AddPostOptionsLine(string.Empty);
+            help.AddPostOptionsLine("Compares two archives and shows their difference in properties and entries:");
+            help.AddPostOptionsLine("arcomp -c \"archive 1.zip\" \"..\\another archive 2.rar\"");
             help.AddOptions(this);
 
             return help;
         }
 
         private void HandleParsingErrorsInHelp(HelpText help) {
-            if (LastParserState.Errors.Any()) {
+            if (LastParserState != null && LastParserState.Errors.Any()) {
                 var errors = help.RenderParsingErrorsText(this, 2);
                 if (!string.IsNullOrEmpty(errors)) {
                     help.AddPreOptionsLine(Environment.NewLine + "Error(s):");
